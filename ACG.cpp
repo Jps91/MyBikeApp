@@ -115,7 +115,75 @@ void ACG::correctMounting(double angleDegrees)
 	}
 }
 
+size_t ACG::findClosestElemen(double target)
+{
 
+	int left = 0;
+	int right = entries - 1;
+	double closestElement = 0.0;
+	double closestDifference = std::abs(target - time[0].x);
+
+	while (left <= right)
+	{
+		int mid = left + (right - left) / 2;
+		double currentElement = time[mid].x;
+		double currentDifference = std::abs(target - currentElement);
+
+		if (currentDifference < closestDifference) {
+			closestDifference = currentDifference;
+			closestElement = currentElement;
+		}
+
+		if (currentElement < target) {
+			left = mid + 1;
+		}
+		else if (currentElement > target) {
+			right = mid - 1;
+		}
+		else {
+			return currentElement; // Das Ziel wurde gefunden
+		}
+	}
+
+	return closestElement;
+
+}
+
+double ACG::correctMountingresult()
+{
+
+	const int steps = 40;
+	std::vector<double>result;
+	result.resize(steps + 1);
+	for (size_t i = 0; i < steps; i++)
+	{
+		correctMounting(i);
+		FastAverageDouble av;
+		for (size_t j = 0; j < entries; j++)
+		{
+			result[i] = av.addValueNoFilter(xtrue[j].x + ytrue[j].x + ztrue[j].x);
+		}
+		//std::cout << result[i] << std::endl;
+	}
+	double res = DBL_MAX;
+	double gravity = 9.806;
+
+	int n = steps-1;
+	double konstante = 9.806;  // Die Konstante, zu der Sie die nächstgelegene Zahl finden möchten
+	double naechste_zahl = result[0];  // Annahme: Das erste Array-Element ist vorläufig das Nächste.
+
+	double kleinste_differenz = std::abs(konstante - result[0]); // Die vorläufige Differenz
+
+	for (int i = 1; i < n; i++) {
+		double differenz = std::abs(konstante - result[i]);
+		if (differenz < kleinste_differenz) {
+			kleinste_differenz = differenz;
+			naechste_zahl = result[i];
+		}
+	}
+	//std::cout << "Nächste Zahl:	" << naechste_zahl << std::endl;
+	return naechste_zahl;
+}
 ACG::~ACG()
 {
 	;

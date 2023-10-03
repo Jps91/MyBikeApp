@@ -39,7 +39,7 @@ GYRO::GYRO(std::string filePath, double xAngle, double yAngle, double zAngel)
 	while (inputFile.getline(value_time, sizeof(value_time), '	')
 		&& inputFile.getline(value_x, sizeof(value_x), '	')
 		&& inputFile.getline(value_y, sizeof(value_y), '	')
-		&& inputFile.getline(value_z, sizeof(value_z),'\n'))
+		&& inputFile.getline(value_z, sizeof(value_z), '\n'))
 	{
 		if (i < entries)
 		{
@@ -51,6 +51,60 @@ GYRO::GYRO(std::string filePath, double xAngle, double yAngle, double zAngel)
 		i++;
 	}
 	inputFile.close();
+}
+
+void GYRO::correctMounting(double yaw, double roll, double pitch)
+{
+	x_true.resize(entries + 1);
+	y_true.resize(entries + 1);
+	z_true.resize(entries + 1);
+
+	for (size_t i = 0; i < entries; i++)
+	{
+		x_true[i].x = x[i].x * cos(pitch) * cos(yaw) - y[i].x * cos(roll) * sin(yaw) + z[i].x * sin(roll) * cos(yaw);
+		y_true[i].x = x[i].x * cos(pitch) * sin(yaw) + y[i].x * cos(roll) * cos(yaw) - z[i].x * sin(roll) * sin(yaw);
+		z_true[i].x = -x[i].x * sin(pitch) * cos(yaw) + y[i].x * sin(roll) * sin(yaw) + z[i].x * cos(roll) * cos(pitch);
+	}
+}
+
+void GYRO::rotationTrue()
+{
+	yaw.resize(entries + 1);
+	pitch.resize(entries + 1);
+	roll.resize(entries + 1);
+
+	for (size_t i = 1; i < entries; i++)
+	{
+		pitch[i].x = x_true[i].x * (time[i].x - time[i - 1].x) + pitch[i - 1].x;
+		if (pitch[i].x < 0)
+		{
+			pitch[i].x += (2 * pi);
+		}
+		if (pitch[i].x > 2 * pi)
+		{
+			pitch[i].x = pitch[i].x - (2 * pi);
+		}
+
+		roll[i].x = y_true[i].x * (time[i].x - time[i - 1].x) + roll[i - 1].x;
+		if (roll[i].x < 0)
+		{
+			roll[i].x += (2 * pi);
+		}
+		if (roll[i].x > (2 * pi))
+		{
+			roll[i].x = roll[i].x - (2 * pi);
+		}
+
+		yaw[i].x = z_true[i].x * (time[i].x - time[i - 1].x) + yaw[i - 1].x;
+		if (yaw[i].x < 0)
+		{
+			yaw[i].x += (2 * pi);
+		}
+		if (yaw[i].x > (2 * pi))
+		{
+			yaw[i].x = yaw[i].x - (2 * pi);
+		}
+	}
 }
 
 void GYRO::rotation()
@@ -92,6 +146,75 @@ void GYRO::rotation()
 		}
 	}
 
+}
+
+size_t GYRO::getIndexByTime(double timestamp)
+{
+	if (timestamp > time[entries - 2].x)
+	{
+		return entries;
+	}
+	for (size_t i = 1; i < entries; i++)
+	{
+		if (time[i].x > timestamp)
+		{
+			return i - 1;
+		}
+	}
+
+	return 1;
+}
+size_t GYRO::findClosestElement(double target)
+{
+	/*
+	int left = 0;
+	int right = entries - 1;
+	double closestElement = 0.0;
+	double closestDifference = std::abs(target - time[0].x);
+
+	while (left <= right)
+	{
+		int mid = left + (right - left) / 2;
+		double currentElement = time[mid].x;
+		double currentDifference = std::abs(target - currentElement);
+
+		if (currentDifference < closestDifference) {
+			closestDifference = currentDifference;
+			closestElement = currentElement;
+		}
+
+		if (currentElement < target) {
+			left = mid + 1;
+		}
+		else if (currentElement > target) {
+			right = mid - 1;
+		}
+		else {
+			return currentElement; // Das Ziel wurde gefunden
+		}
+	}
+
+	return closestElement;
+	*/
+	size_t begin = 0;
+	size_t end = time.size() - 1;
+	size_t i = 0;
+	double value = target;
+	i = (end - begin) / 2;
+	while (end - begin!=1)
+	{
+		if (time[i].x > value)
+		{
+			end = i;
+			i = i - (end - begin) / 2;
+		}
+		else if (time[i].x < value)
+		{
+			begin = i;
+			i = i + (end - begin) / 2;
+		}
+	}
+	return i;
 }
 
 void GYRO::store()

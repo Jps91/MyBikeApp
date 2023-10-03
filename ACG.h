@@ -38,6 +38,8 @@ public:
 
 	void smoothIt();
 	void correctMounting(double angle);
+	size_t findClosestElemen(double target);
+	double correctMountingresult();
 
 	~ACG();
 

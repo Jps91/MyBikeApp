@@ -2,17 +2,62 @@
 //
 
 #include <iostream>
+#include <filesystem>
 #include "GPS.h"
 #include "ACG.h"
 #include "GYRO.h"
 
 int main()
 {
-	GPS gps("");
-	ACG acg("");
-	GYRO gyro("", 0, 0, 0);
-	
+	std::filesystem::path relativePath = "Data\\OUTPUT.csv";
+	std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
+	std::fstream outputFile{ absolutePath.string(), std::ios::in | std::ios::out | std::ios::trunc};
+	if (!outputFile)
+	{
+		std::cerr << "Could not open: " << absolutePath.string() << std::endl;
+	}
 
+
+
+	GPS gps("");
+
+
+	ACG acg("");
+
+	double y_correction = acg.correctMountingresult();
+	acg.correctMounting(y_correction);
+
+
+	GYRO gyro("", 0, 0, 0);
+	gyro.rotation();
+	/*gyro.correctMounting(0, 0, y_correction);
+	gyro.correctMounting(0, 0, 15);
+	gyro.rotationTrue();*/
+	double speed = 0;
+	
+	for (size_t i = 1; i < acg.entries; i++)
+	{
+		size_t gpsI = gps.getIndexByTime(acg.time[i].x);
+		size_t gyroI = gyro.findClosestElement(acg.time[i].x);	
+		double gpsspeed = 0;
+		if (isnan(gps.speed[gpsI].x))
+		{
+			gpsspeed = 0.0001;
+		}
+		else
+		{
+			gpsspeed = gps.speed[gpsI].x;
+		}
+		speed = speed + (acg.time[i].x - acg.time[i - 1].x) * acg.ytrue[i].x;
+		speed = speed * 0.998 + gpsspeed * 0.002;
+		outputFile << acg.time[i].x<< "	" << gyro.roll[gyroI].x * 180 / pi << "	" << gyro.pitch[gyroI].x * 180 / pi << "	" << gyro.yaw[gyroI].x * 180 / pi << "	" << speed*3.6 << std::endl;
+	}
+	/*
+	for (size_t i = 1; i < gyro.entries; i++)
+	{
+		outputFile << gyro.time[i].x << "	" << gyro.roll[i].x*180/pi << std::endl;
+	}*/
+	outputFile.close();
 	std::cout << "Hello World!\n";
 }
 
