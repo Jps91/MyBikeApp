@@ -21,9 +21,27 @@
     <ClCompile Include="GPS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ACG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FastAverageDouble.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GYRO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GPS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ACG.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastAverageDouble.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GYRO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

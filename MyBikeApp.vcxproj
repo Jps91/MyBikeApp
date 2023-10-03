@@ -128,11 +128,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ACG.cpp" />
+    <ClCompile Include="FastAverageDouble.cpp" />
     <ClCompile Include="GPS.cpp" />
+    <ClCompile Include="GYRO.cpp" />
     <ClCompile Include="MyBikeApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ACG.h" />
+    <ClInclude Include="FastAverageDouble.h" />
     <ClInclude Include="GPS.h" />
+    <ClInclude Include="GYRO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

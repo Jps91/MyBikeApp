@@ -3,11 +3,17 @@
 
 #include <iostream>
 #include "GPS.h"
+#include "ACG.h"
+#include "GYRO.h"
+
 int main()
 {
-    GPS gps("");
+	GPS gps("");
+	ACG acg("");
+	GYRO gyro("", 0, 0, 0);
+	
 
-    std::cout << "Hello World!\n";
+	std::cout << "Hello World!\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
