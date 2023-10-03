@@ -2,9 +2,11 @@
 //
 
 #include <iostream>
-
+#include "GPS.h"
 int main()
 {
+    GPS gps("");
+
     std::cout << "Hello World!\n";
 }
 
