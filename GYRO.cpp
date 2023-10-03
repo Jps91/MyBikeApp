@@ -166,42 +166,12 @@ size_t GYRO::getIndexByTime(double timestamp)
 }
 size_t GYRO::findClosestElement(double target)
 {
-	/*
-	int left = 0;
-	int right = entries - 1;
-	double closestElement = 0.0;
-	double closestDifference = std::abs(target - time[0].x);
-
-	while (left <= right)
-	{
-		int mid = left + (right - left) / 2;
-		double currentElement = time[mid].x;
-		double currentDifference = std::abs(target - currentElement);
-
-		if (currentDifference < closestDifference) {
-			closestDifference = currentDifference;
-			closestElement = currentElement;
-		}
-
-		if (currentElement < target) {
-			left = mid + 1;
-		}
-		else if (currentElement > target) {
-			right = mid - 1;
-		}
-		else {
-			return currentElement; // Das Ziel wurde gefunden
-		}
-	}
-
-	return closestElement;
-	*/
 	size_t begin = 0;
 	size_t end = time.size() - 1;
 	size_t i = 0;
 	double value = target;
 	i = (end - begin) / 2;
-	while (end - begin!=1)
+	while (end - begin != 1)
 	{
 		if (time[i].x > value)
 		{

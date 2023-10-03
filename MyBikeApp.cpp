@@ -23,18 +23,22 @@ int main()
 
 
 	ACG acg("");
-
-	double y_correction = acg.correctMountingresult();
+	double y_correction = acg.correctMountingresult(100);
+	std::cout << "degrees Angle: "<< y_correction <<std::endl;
 	acg.correctMounting(y_correction);
 
 
 	GYRO gyro("", 0, 0, 0);
-	gyro.rotation();
-	/*gyro.correctMounting(0, 0, y_correction);
-	gyro.correctMounting(0, 0, 15);
-	gyro.rotationTrue();*/
+	//gyro.rotation();
+	gyro.correctMounting(0, 0, y_correction);
+	//gyro.correctMounting(0, 0, 15);
+	gyro.rotationTrue();
 	double speed = 0;
-	
+	FastAverageDouble avgyrox(100);
+	FastAverageDouble avgyrox2(100);
+	FastAverageDouble avgyrox3(100);
+	double speedonly = 0;
+	double sum = 0;
 	for (size_t i = 1; i < acg.entries; i++)
 	{
 		size_t gpsI = gps.getIndexByTime(acg.time[i].x);
@@ -48,15 +52,16 @@ int main()
 		{
 			gpsspeed = gps.speed[gpsI].x;
 		}
+		speedonly = speedonly + (acg.time[i].x - acg.time[i - 1].x) * acg.ytrue[i].x;
+
 		speed = speed + (acg.time[i].x - acg.time[i - 1].x) * acg.ytrue[i].x;
-		speed = speed * 0.998 + gpsspeed * 0.002;
-		outputFile << acg.time[i].x<< "	" << gyro.roll[gyroI].x * 180 / pi << "	" << gyro.pitch[gyroI].x * 180 / pi << "	" << gyro.yaw[gyroI].x * 180 / pi << "	" << speed*3.6 << std::endl;
+		double gpsAndSpeed = 0.998;
+		speed = speed * gpsAndSpeed+ gpsspeed * (1- gpsAndSpeed);
+		sum = sum + (acg.time[i].x - acg.time[i - 1].x) * acg.y[i].x;
+		//outputFile << acg.time[i].x<< "	" << gyro.roll[gyroI].x * 180 / pi << "	" << gyro.pitch[gyroI].x * 180 / pi << "	" << gyro.yaw[gyroI].x * 180 / pi << "	" << speed*3.6 << std::endl;
+		outputFile << acg.time[i].x<< "	" << speed * 3.6 << "	" << gpsspeed*3.6 << "	" << speedonly *3.6<< "	" << gps.altitude[gpsI].x<< std::endl;
+		//outputFile << avgyrox3.additionalValue(avgyrox2.additionalValue(avgyrox.additionalValue(gyro.x[gyroI].x))) << std::endl;
 	}
-	/*
-	for (size_t i = 1; i < gyro.entries; i++)
-	{
-		outputFile << gyro.time[i].x << "	" << gyro.roll[i].x*180/pi << std::endl;
-	}*/
 	outputFile.close();
 	std::cout << "Hello World!\n";
 }

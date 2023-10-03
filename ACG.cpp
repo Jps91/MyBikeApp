@@ -149,21 +149,20 @@ size_t ACG::findClosestElemen(double target)
 
 }
 
-double ACG::correctMountingresult()
+double ACG::correctMountingresult(double steps)
 {
 
-	const int steps = 40;
 	std::vector<double>result;
 	result.resize(steps + 1);
 	for (size_t i = 0; i < steps; i++)
 	{
-		correctMounting(i);
+		correctMounting(static_cast<double>(40) / i);			//40=Max Angle
 		FastAverageDouble av;
 		for (size_t j = 0; j < entries; j++)
 		{
 			result[i] = av.addValueNoFilter(xtrue[j].x + ytrue[j].x + ztrue[j].x);
 		}
-		//std::cout << result[i] << std::endl;
+		std::cout << result[i] << std::endl;
 	}
 	double res = DBL_MAX;
 	double gravity = 9.806;
@@ -173,16 +172,17 @@ double ACG::correctMountingresult()
 	double naechste_zahl = result[0];  // Annahme: Das erste Array-Element ist vorläufig das Nächste.
 
 	double kleinste_differenz = std::abs(konstante - result[0]); // Die vorläufige Differenz
-
+	size_t pointer = 0;
 	for (int i = 1; i < n; i++) {
 		double differenz = std::abs(konstante - result[i]);
 		if (differenz < kleinste_differenz) {
 			kleinste_differenz = differenz;
 			naechste_zahl = result[i];
+			pointer = i;
 		}
 	}
 	//std::cout << "Nächste Zahl:	" << naechste_zahl << std::endl;
-	return naechste_zahl;
+	return pointer;
 }
 ACG::~ACG()
 {
