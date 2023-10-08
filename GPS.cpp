@@ -85,6 +85,26 @@ GPS::GPS(std::string filePath)
 	}
 	inputFile.close();
 
+	myDist.resize(entries + 1);
+	const double R = 6378.137; // Radius of the Earth in kilometers
+
+	for (size_t i = 1; i < entries; i++)
+	{
+
+		double dLat = (latitude[i].x * M_PI / 180) - (latitude[i - 1].x * M_PI / 180);
+		double dLon = (longitude[i].x * M_PI / 180) - (longitude[i - 1].x * M_PI / 180);
+
+		double a = sin(dLat / 2) * sin(dLat / 2) +
+			cos(latitude[i - 1].x * M_PI / 180) * cos(latitude[i].x * M_PI / 180) *
+			sin(dLon / 2) * sin(dLon / 2);
+
+		double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+		double d = R * c;
+
+		myDist[i].x = d * 1000 + myDist[i - 1].x; // meters
+	}
+
+
 }
 
 size_t GPS::getIndexByTime(double timestamp)

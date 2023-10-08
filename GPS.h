@@ -6,6 +6,9 @@
 #include <math.h>  
 #include <iostream>
 
+#ifndef M_PI
+#define M_PI (3.14159265358979323846264338327950288)
+#endif
 
 class GPS
 {
@@ -21,6 +24,8 @@ public:
 	std::vector<_CRT_DOUBLE> horizontalAccuracy;//Accuracy of long and alt
 	std::vector<_CRT_DOUBLE> verticalAccuracy;	//height Accuracy without map
 	std::vector<_CRT_DOUBLE> satellites;	//count how many satellits
+	
+	std::vector<_CRT_DOUBLE> myDist;
 
 	size_t entries = 0;
 	GPS();
