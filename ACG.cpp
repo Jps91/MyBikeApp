@@ -153,36 +153,45 @@ double ACG::correctMountingresult(double steps)
 {
 
 	std::vector<double>result;
+	std::vector<double>angle;
 	result.resize(steps + 1);
+	angle.resize(steps + 1);
 	for (size_t i = 0; i < steps; i++)
 	{
-		correctMounting(static_cast<double>(40) / i);			//40=Max Angle
+		double testingAngle = (i/steps)*40;		//40=Max Angle
+		//std::cout << testingAngle << std::endl;
+		correctMounting(testingAngle);
 		FastAverageDouble av;
 		for (size_t j = 0; j < entries; j++)
 		{
-			result[i] = av.addValueNoFilter(xtrue[j].x + ytrue[j].x + ztrue[j].x);
+			result[i] = av.addValueNoFilter(ytrue[j].x);
 		}
+		av.~FastAverageDouble();
+		angle[i] = testingAngle;
 		std::cout << result[i] << std::endl;
+
 	}
-	double res = DBL_MAX;
-	double gravity = 9.806;
 
-	int n = steps-1;
-	double konstante = 9.806;  // Die Konstante, zu der Sie die nächstgelegene Zahl finden möchten
-	double naechste_zahl = result[0];  // Annahme: Das erste Array-Element ist vorläufig das Nächste.
-
-	double kleinste_differenz = std::abs(konstante - result[0]); // Die vorläufige Differenz
-	size_t pointer = 0;
-	for (int i = 1; i < n; i++) {
-		double differenz = std::abs(konstante - result[i]);
-		if (differenz < kleinste_differenz) {
-			kleinste_differenz = differenz;
-			naechste_zahl = result[i];
-			pointer = i;
+	size_t begin = 0;
+	size_t end = result.size() - 1;
+	size_t i = 0;
+	double value = 0;
+	i = (end - begin) / 2;
+	while (end - begin != 1)
+	{
+		if (result[i] < value)
+		{
+			end = i;
+			i = i - (end - begin) / 2;
+		}
+		else if (result[i] > value)
+		{
+			begin = i;
+			i = i + (end - begin) / 2;
 		}
 	}
-	//std::cout << "Nächste Zahl:	" << naechste_zahl << std::endl;
-	return pointer;
+	result[i];	//accuracy
+	return angle[i];
 }
 ACG::~ACG()
 {
