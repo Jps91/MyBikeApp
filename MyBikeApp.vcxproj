@@ -134,6 +134,7 @@
     <ClCompile Include="GYRO.cpp" />
     <ClCompile Include="LeanAngle.cpp" />
     <ClCompile Include="MyBikeApp.cpp" />
+    <ClCompile Include="Position.cpp" />
     <ClCompile Include="Rotation.cpp" />
     <ClCompile Include="Speed.cpp" />
   </ItemGroup>
@@ -143,6 +144,8 @@
     <ClInclude Include="GPS.h" />
     <ClInclude Include="GYRO.h" />
     <ClInclude Include="LeanAngle.h" />
+    <ClInclude Include="lib\gnuplot_i.hpp" />
+    <ClInclude Include="Position.h" />
     <ClInclude Include="Rotation.h" />
     <ClInclude Include="Speed.h" />
   </ItemGroup>

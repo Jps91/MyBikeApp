@@ -116,34 +116,34 @@ void GYRO::rotation()
 	for (size_t i = 1; i < entries; i++)
 	{
 		pitch[i].x = x[i].x * (time[i].x - time[i - 1].x) + pitch[i - 1].x;
-		if (pitch[i].x < 0)
+		/*if (pitch[i].x < 0)
 		{
 			pitch[i].x += (2 * pi);
 		}
 		if (pitch[i].x > 2 * pi)
 		{
 			pitch[i].x = pitch[i].x - (2 * pi);
-		}
+		}*/
 
 		roll[i].x = y[i].x * (time[i].x - time[i - 1].x) + roll[i - 1].x;
-		if (roll[i].x < 0)
+		/*if (roll[i].x < 0)
 		{
 			roll[i].x += (2 * pi);
 		}
 		if (roll[i].x > (2 * pi))
 		{
 			roll[i].x = roll[i].x - (2 * pi);
-		}
+		}*/
 
 		yaw[i].x = z[i].x * (time[i].x - time[i - 1].x) + yaw[i - 1].x;
-		if (yaw[i].x < 0)
+		/*if (yaw[i].x < 0)
 		{
 			yaw[i].x += (2 * pi);
 		}
 		if (yaw[i].x > (2 * pi))
 		{
 			yaw[i].x = yaw[i].x - (2 * pi);
-		}
+		}*/
 	}
 
 }

@@ -11,7 +11,7 @@ Rotation::Rotation(GYRO gyro, ACG acg, GPS gps)
 	pitch.resize(size);
 	roll.resize(size);
 	yaw.resize(size);
-	double ratio = 0.05;
+	double ratio = 0.002;
 
 	double corrector = 0;
 	double rollCorrector = 0;
@@ -38,6 +38,21 @@ Rotation::Rotation(GYRO gyro, ACG acg, GPS gps)
 
 		rollCorrector = RollAv.additionalValue(gyro.roll[i].x);
 		roll[i].x = gyro.roll[i].x - rollCorrector;
+
+
+		if (!isnan(gps.bearing[gpsI].x))
+		{
+			yaw[i].x = gps.bearing[gpsI].x;
+			yaw[i].x = gps.bearing[gpsI].x * ratio + (180/pi)*gyro.yaw[i].x * (1 - ratio);
+			if (yaw[i].x > 360)
+			{
+				yaw[i].x -= 360;
+			}
+			if (yaw[i].x < 0)
+			{
+				yaw[i].x += 360;
+			}
+		}
 
 	}
 }
