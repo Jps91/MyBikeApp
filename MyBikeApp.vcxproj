@@ -132,13 +132,19 @@
     <ClCompile Include="FastAverageDouble.cpp" />
     <ClCompile Include="GPS.cpp" />
     <ClCompile Include="GYRO.cpp" />
+    <ClCompile Include="LeanAngle.cpp" />
     <ClCompile Include="MyBikeApp.cpp" />
+    <ClCompile Include="Rotation.cpp" />
+    <ClCompile Include="Speed.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ACG.h" />
     <ClInclude Include="FastAverageDouble.h" />
     <ClInclude Include="GPS.h" />
     <ClInclude Include="GYRO.h" />
+    <ClInclude Include="LeanAngle.h" />
+    <ClInclude Include="Rotation.h" />
+    <ClInclude Include="Speed.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

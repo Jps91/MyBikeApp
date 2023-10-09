@@ -6,6 +6,8 @@
 #include "GPS.h"
 #include "ACG.h"
 #include "GYRO.h"
+#include "Speed.h"
+#include "Rotation.h"
 
 int main()
 {
@@ -24,7 +26,7 @@ int main()
 
 	ACG acg("");
 	double y_correction = acg.correctMountingresult(100);
-	std::cout << "degrees Angle: "<< y_correction <<std::endl;
+	std::cout << "degrees Angle: " << y_correction << std::endl;
 	acg.correctMounting(y_correction);
 
 
@@ -39,27 +41,18 @@ int main()
 	FastAverageDouble avgyrox3(100);
 	double speedonly = 0;
 	double sum = 0;
+
+	Speed sp(gps, acg);
+	//sp.filter();
+	Rotation rot(gyro, acg, gps);
+
 	for (size_t i = 1; i < acg.entries; i++)
 	{
 		size_t gpsI = gps.getIndexByTime(acg.time[i].x);
-		size_t gyroI = gyro.findClosestElement(acg.time[i].x);	
-		double gpsspeed = 0;
-		if (isnan(gps.speed[gpsI].x))
-		{
-			gpsspeed = 0.0001;
-		}
-		else
-		{
-			gpsspeed = gps.speed[gpsI].x;
-		}
-		speedonly = speedonly + (acg.time[i].x - acg.time[i - 1].x) * acg.ytrue[i].x;
+		size_t gyroI = gyro.findClosestElement(acg.time[i].x);
 
-		speed = speed + (acg.time[i].x - acg.time[i - 1].x) * acg.ytrue[i].x;
-		double gpsAndSpeed = 0.998;
-		speed = speed * gpsAndSpeed+ gpsspeed * (1- gpsAndSpeed);
-		sum = sum + (acg.time[i].x - acg.time[i - 1].x) * acg.y[i].x;
 		//outputFile << acg.time[i].x<< "	" << gyro.roll[gyroI].x * 180 / pi << "	" << gyro.pitch[gyroI].x * 180 / pi << "	" << gyro.yaw[gyroI].x * 180 / pi << "	" << speed*3.6 << std::endl;
-		outputFile << acg.time[i].x<< "	" << speed * 3.6 << "	" << gpsspeed*3.6 << "	" << speedonly *3.6<< "	" << gps.altitude[gpsI].x<< std::endl;
+		outputFile << acg.time[i].x << "	" << sp.speed[0].x * 3.6 << "	" << rot.roll[gyroI].x *180/pi<< "	" << gyro.pitch[gyroI].x << "	" << gps.altitude[gpsI].x << std::endl;
 		//outputFile << avgyrox3.additionalValue(avgyrox2.additionalValue(avgyrox.additionalValue(gyro.x[gyroI].x))) << std::endl;
 	}
 	outputFile.close();

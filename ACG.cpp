@@ -168,7 +168,7 @@ double ACG::correctMountingresult(double steps)
 		}
 		av.~FastAverageDouble();
 		angle[i] = testingAngle;
-		std::cout << result[i] << std::endl;
+		//std::cout << result[i] << std::endl;
 
 	}
 
@@ -190,7 +190,7 @@ double ACG::correctMountingresult(double steps)
 			i = i + (end - begin) / 2;
 		}
 	}
-	result[i];	//accuracy
+	//result[i];	//accuracy
 	return angle[i];
 }
 ACG::~ACG()

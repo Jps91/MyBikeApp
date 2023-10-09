@@ -30,6 +30,15 @@
     <ClCompile Include="GYRO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LeanAngle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Speed.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rotation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GPS.h">
@@ -42,6 +51,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GYRO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LeanAngle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Speed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rotation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
