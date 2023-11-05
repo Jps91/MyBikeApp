@@ -103,7 +103,17 @@ GPS::GPS(std::string filePath)
 
 		myDist[i].x = d * 1000 + myDist[i - 1].x; // meters
 	}
-
+	const double EARTH_RADIUS = 6371000.0;
+	const double DEG_TO_RAD = 0.017453292519943295;
+	x.resize(entries);
+	y.resize(entries);
+	z.resize(entries);
+	for (size_t i = 0; i < entries; i++)
+	{
+		x[i].x = EARTH_RADIUS * longitude[i].x * DEG_TO_RAD;
+		y[i].x = EARTH_RADIUS * log(tan((90.0 + latitude[i].x) * DEG_TO_RAD / 2.0));
+		z[i].x = altitude[i].x;
+	}
 
 }
 
@@ -124,67 +134,29 @@ size_t GPS::getIndexByTime(double timestamp)
 	return 1;
 }
 
-void GPS::terrain()
+size_t GPS::findClosestElement(double target)
 {
-	std::fstream file{"C:\\1_Jan\\DataServerClient\\Projekte\\BikeApp\\SensorBox\\ENDLESS_23_06_2023_16_27_03\\GPS_Log.csv", std::ios::trunc | std::ios::out};
-	int loadingbar = round(static_cast<float>(entries) / 100);
-	for (size_t i = 0; i < entries - 1; i++)
+	size_t begin = 0;
+	size_t end = time.size() - 1;
+	size_t i = 0;
+	double value = target;
+	i = (end - begin) / 2;
+	while (end - begin != 1)
 	{
-		file << latitude[i].x << " " << longitude[i].x << " " << altitude[i].x << std::endl;
-
-
-		if (i % loadingbar == 0)
+		if (time[i].x > value)
 		{
-			system("CLS");
-			std::cout << "Saving GPS_log.csv File: " << 100 * static_cast<float>(i) / entries << "%";
+			end = i;
+			i = i - (end - begin) / 2;
+		}
+		else if (time[i].x < value)
+		{
+			begin = i;
+			i = i + (end - begin) / 2;
 		}
 	}
-	file.close();
+	return i;
 }
 
-double GPS::fitLineToPointsAngle(const std::vector<double>& xValues, const std::vector<double>& yValues)
-{
-	if (xValues.size() != yValues.size())
-	{
-		return 0.0;
-	}
-
-	double xMean = 0.0;
-	double yMean = 0.0;
-
-	for (size_t i = 0; i < xValues.size(); ++i)
-	{
-		xMean += xValues[i];
-		yMean += yValues[i];
-	}
-
-	xMean /= xValues.size();
-	yMean /= yValues.size();
-
-	double numerator = 0.0;
-	double denominator = 0.0;
-
-	for (size_t i = 0; i < xValues.size(); ++i)
-	{
-		numerator += (xValues[i] - xMean) * (yValues[i] - yMean);
-		denominator += (xValues[i] - xMean) * (xValues[i] - xMean);
-	}
-
-	if (denominator != 0.0)
-	{
-		double slope = numerator / denominator;
-		double intercept = yMean - slope * xMean;
-		double angleRadians = std::atan(slope);
-		double angleDegrees = angleRadians * (180.0 / 3.1415);
-		return angleDegrees;
-	}
-	else
-	{
-		return 0.0;
-	}
-
-
-}
 
 GPS::~GPS()
 {

@@ -26,13 +26,14 @@ public:
 	std::vector<_CRT_DOUBLE> satellites;	//count how many satellits
 	
 	std::vector<_CRT_DOUBLE> myDist;
+	std::vector<_CRT_DOUBLE> x;
+	std::vector<_CRT_DOUBLE> y;
+	std::vector<_CRT_DOUBLE> z;
 
 	size_t entries = 0;
 	GPS();
 	GPS(std::string filePath);
-	size_t getIndexByTime(double timestamp);
-	void terrain();
-	double fitLineToPointsAngle(const std::vector<double>& xValues, const std::vector<double>& yValues);
+	size_t findClosestElement(double target);
 	~GPS();
 private:
 	std::string fileName_m = "Location.csv";
