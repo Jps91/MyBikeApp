@@ -86,7 +86,7 @@ GPS::GPS(std::string filePath)
 	inputFile.close();
 
 	myDist.resize(entries + 1);
-	const double R = 6378.137; // Radius of the Earth in kilometers
+	const double R = 6378.137;
 
 	for (size_t i = 1; i < entries; i++)
 	{
@@ -115,23 +115,6 @@ GPS::GPS(std::string filePath)
 		z[i].x = altitude[i].x;
 	}
 
-}
-
-size_t GPS::getIndexByTime(double timestamp)
-{
-	if (timestamp > time[entries - 2].x)
-	{
-		return entries;
-	}
-	for (size_t i = 0; i < entries; i++)
-	{
-		if (time[i].x > timestamp)
-		{
-			return i;
-		}
-	}
-
-	return 1;
 }
 
 size_t GPS::findClosestElement(double target)

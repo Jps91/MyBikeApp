@@ -9,7 +9,7 @@ Speed::Speed(GPS gps, ACG acg)
 	double ratio = 0.998;	//ratio of GPS speed and ACG speed
 	for (size_t i = 1; i < acg.entries; i++)
 	{
-		size_t gpsI = gps.getIndexByTime(acg.time[i].x);
+		size_t gpsI = gps.findClosestElement(acg.time[i].x);
 		gpsspeed = gps.speed[gpsI].x;
 		speed_temp = speed_temp + (acg.time[i].x - acg.time[i - 1].x) * acg.ytrue[i].x;
 
@@ -27,10 +27,11 @@ Speed::Speed(GPS gps, ACG acg)
 void Speed::filter()
 {
 	filtertspeed.resize(time.size() + 1);
-	FastAverageDouble av(100);
+	FastAverageDouble av(50);
+	FastAverageDouble av2(10);
 	for (size_t i = 0; i < time.size(); i++)
 	{
-		filtertspeed[i].x = av.additionalValue(speed[i].x);
+		filtertspeed[i].x = av2.additionalValue(av.additionalValue(speed[i].x));
 	}
 }
 

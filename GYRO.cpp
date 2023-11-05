@@ -1,7 +1,7 @@
 #include "GYRO.h"
 #include <filesystem>
 
-GYRO::GYRO(std::string filePath, double xAngle, double yAngle, double zAngel)
+GYRO::GYRO(std::string filePath)
 {
 	std::filesystem::path relativePath = "Data\\Gyroscope.csv";
 	std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
@@ -76,34 +76,10 @@ void GYRO::rotationTrue()
 	for (size_t i = 1; i < entries; i++)
 	{
 		pitch[i].x = x_true[i].x * (time[i].x - time[i - 1].x) + pitch[i - 1].x;
-		if (pitch[i].x < 0)
-		{
-			pitch[i].x += (2 * pi);
-		}
-		if (pitch[i].x > 2 * pi)
-		{
-			pitch[i].x = pitch[i].x - (2 * pi);
-		}
 
 		roll[i].x = y_true[i].x * (time[i].x - time[i - 1].x) + roll[i - 1].x;
-		if (roll[i].x < 0)
-		{
-			roll[i].x += (2 * pi);
-		}
-		if (roll[i].x > (2 * pi))
-		{
-			roll[i].x = roll[i].x - (2 * pi);
-		}
-
+		
 		yaw[i].x = z_true[i].x * (time[i].x - time[i - 1].x) + yaw[i - 1].x;
-		if (yaw[i].x < 0)
-		{
-			yaw[i].x += (2 * pi);
-		}
-		if (yaw[i].x > (2 * pi))
-		{
-			yaw[i].x = yaw[i].x - (2 * pi);
-		}
 	}
 }
 
@@ -116,54 +92,14 @@ void GYRO::rotation()
 	for (size_t i = 1; i < entries; i++)
 	{
 		pitch[i].x = x[i].x * (time[i].x - time[i - 1].x) + pitch[i - 1].x;
-		/*if (pitch[i].x < 0)
-		{
-			pitch[i].x += (2 * pi);
-		}
-		if (pitch[i].x > 2 * pi)
-		{
-			pitch[i].x = pitch[i].x - (2 * pi);
-		}*/
 
 		roll[i].x = y[i].x * (time[i].x - time[i - 1].x) + roll[i - 1].x;
-		/*if (roll[i].x < 0)
-		{
-			roll[i].x += (2 * pi);
-		}
-		if (roll[i].x > (2 * pi))
-		{
-			roll[i].x = roll[i].x - (2 * pi);
-		}*/
 
 		yaw[i].x = z[i].x * (time[i].x - time[i - 1].x) + yaw[i - 1].x;
-		/*if (yaw[i].x < 0)
-		{
-			yaw[i].x += (2 * pi);
-		}
-		if (yaw[i].x > (2 * pi))
-		{
-			yaw[i].x = yaw[i].x - (2 * pi);
-		}*/
 	}
 
 }
 
-size_t GYRO::getIndexByTime(double timestamp)
-{
-	if (timestamp > time[entries - 2].x)
-	{
-		return entries;
-	}
-	for (size_t i = 1; i < entries; i++)
-	{
-		if (time[i].x > timestamp)
-		{
-			return i - 1;
-		}
-	}
-
-	return 1;
-}
 size_t GYRO::findClosestElement(double target)
 {
 	size_t begin = 0;
@@ -185,24 +121,6 @@ size_t GYRO::findClosestElement(double target)
 		}
 	}
 	return i;
-}
-
-void GYRO::store()
-{
-	std::fstream file{"C:\\1_Jan\\DataServerClient\\Projekte\\BikeApp\\SensorBox\\ENDLESS_23_06_2023_16_27_03\\GYRO_Log.csv", std::ios::trunc | std::ios::out};
-	int loadingbar = round(static_cast<float>(entries) / 100);
-	for (size_t i = 0; i < entries - 1; i++)
-	{
-		file << time[i].x << "	" << pitch[i].x << " " << roll[i].x << " " << yaw[i].x << std::endl;
-
-
-		if (i % loadingbar == 0)
-		{
-			system("CLS");
-			std::cout << "Saving GYRO_log.csv File: " << 100 * static_cast<float>(i) / entries << "%";
-		}
-	}
-	file.close();
 }
 
 GYRO::~GYRO()

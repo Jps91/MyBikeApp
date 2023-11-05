@@ -136,6 +136,7 @@
     <ClCompile Include="MyBikeApp.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="Rotation.cpp" />
+    <ClCompile Include="SegmentsRide.cpp" />
     <ClCompile Include="Speed.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +148,7 @@
     <ClInclude Include="lib\gnuplot_i.hpp" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="Rotation.h" />
+    <ClInclude Include="SegmentsRide.h" />
     <ClInclude Include="Speed.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

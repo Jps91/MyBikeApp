@@ -17,7 +17,7 @@ Position::Position(GPS gps, ACG acg, Rotation rot)
 
 	for (size_t i = 0; i < entries; i++)
 	{
-		size_t gpsI = gps.getIndexByTime(acg.time[i].x);
+		size_t gpsI = gps.findClosestElement(acg.time[i].x);
 		x[i].x = EARTH_RADIUS * gps.longitude[gpsI].x * DEG_TO_RAD;
 		y[i].x = EARTH_RADIUS * log(tan((90.0 + gps.latitude[gpsI].x) * DEG_TO_RAD / 2.0));
 		z[i].x = gps.altitude[gpsI].x;
