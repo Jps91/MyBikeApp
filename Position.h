@@ -17,7 +17,9 @@ public:
 	std::vector<_CRT_DOUBLE> z;
 
 	Position();
-	Position(GPS gps,ACG acg,Rotation rot);
-
+	Position(GPS gps);
+private:
+	const double EarthRadius = 6371.0;
+	std::tuple <double, double, double>gps_to_cartesian(double latitude, double longitude, double altitude);
 };
 
