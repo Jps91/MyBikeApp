@@ -109,6 +109,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="ACG.cpp" />
     <ClCompile Include="FastAverageDouble.cpp" />
+    <ClCompile Include="Filter.cpp" />
     <ClCompile Include="GPS.cpp" />
     <ClCompile Include="GYRO.cpp" />
     <ClCompile Include="LeanAngle.cpp" />
@@ -142,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="ACG.h" />
     <ClInclude Include="FastAverageDouble.h" />
+    <ClInclude Include="Filter.h" />
     <ClInclude Include="GPS.h" />
     <ClInclude Include="GYRO.h" />
     <ClInclude Include="LeanAngle.h" />

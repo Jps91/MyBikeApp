@@ -158,7 +158,7 @@ double ACG::correctMountingresult(double steps)
 	angle.resize(steps + 1);
 	for (size_t i = 0; i < steps; i++)
 	{
-		double testingAngle = (i/steps)*40;		//40=Max Angle
+		double testingAngle = (i / steps) * 40;		//40=Max Angle
 		//std::cout << testingAngle << std::endl;
 		correctMounting(testingAngle);
 		FastAverageDouble av;
@@ -192,6 +192,19 @@ double ACG::correctMountingresult(double steps)
 	}
 	//result[i];	//accuracy
 	return angle[i];
+}
+void ACG::filter()
+{
+	xfilter.resize(entries);
+	FrequnceTimeFilter tFilter(0.5, 0.8);
+	FrequenceAmplitudeFilter fFilter(0.0, 0.1);
+	averageFilter avFilter{};
+	avFilter.filter(x);
+	for (size_t i = 1; i < entries; i++)
+	{
+		//xfilter[i].x = tFilter.filter(time[i].x - time[i - 1].x, x[i].x) + fFilter.filter(time[i].x - time[i - 1].x, x[i].x);
+		xfilter[i].x = x[i].x;
+	}
 }
 ACG::~ACG()
 {
