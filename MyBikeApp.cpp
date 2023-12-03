@@ -24,12 +24,19 @@ int main()
 
 	ACG acg("");
 	GPS gps("");
+	GYRO gyro("");
+	Rotation rot(acg);
 	Position pos(gps);
-
-	size_t limit = gps.entries-1;
+	size_t limit = acg.entries-1;
 	for (size_t i = 0; i < limit; i++)
 	{
-		outputFile << pos.x[i].x << "	" << pos.y[i].x << "	" << pos.z[i].x << '\n';
+		size_t gpsI = gps.findClosestElement(acg.time[i].x);
+		size_t gyroI = gyro.findClosestElement(acg.time[i].x);
+		if (pos.x.at(i).x!=0&& pos.y.at(i).x!=0)
+		{
+
+			outputFile << pos.x.at(i).x<< "	" << pos.y.at(i).x << "	" << rot.yaw[gyroI].x << '\n';
+		}
 	}
 	outputFile.close();
 	std::cout << "Hello World!\n";

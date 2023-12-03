@@ -4,17 +4,18 @@ Rotation::Rotation()
 {
 }
 
-Rotation::Rotation(GYRO gyroue, ACG acg, GPS gps)
+Rotation::Rotation(ACG acg)
 {
+	GPS gps("");
 	GYRO gyro("");
 	double y_correction = acg.correctMountingresult(100);
 	gyro.correctMounting(0, 0, y_correction);
 	gyro.rotationTrue();
 	size_t size = gyro.entries;
-	time.resize(size);
-	pitch.resize(size);
-	roll.resize(size);
-	yaw.resize(size);
+	time.resize(size + 1);
+	pitch.resize(size + 1);
+	roll.resize(size + 1);
+	yaw.resize(size + 1);
 	double ratio = 0.02;
 
 	double corrector = 0;
@@ -28,24 +29,10 @@ Rotation::Rotation(GYRO gyroue, ACG acg, GPS gps)
 	{
 		averageResult = total.addValueNoFilter(gyro.roll[i].x);
 	}
-	std::vector<double>yawCahce;
-	yawCahce.resize(size);
-	FastAverageDouble yawAv(500);
-	FastAverageDouble yawAv2(50);
-	for (size_t i = 1; i < size; i++)
-	{
-		yawCahce[i] = yawAv2.additionalValue(yawAv.additionalValue(gyro.yaw[i].x))* (180 / pi);
+	FastAverageDouble yawAv(50);
 
-		while (yawCahce[i]<0)
-		{
-			yawCahce[i] += 360;
-		}
-		while (yawCahce[i]>360)
-		{
-			yawCahce[i] =- 360;
-		}
-	}
-
+	size_t gpsold = 0;
+	double yawAdjuster = 0;
 	for (size_t i = 1; i < size; i++)
 	{
 		//pitch=Steepness{Distance&Height&time}
@@ -71,15 +58,11 @@ Rotation::Rotation(GYRO gyroue, ACG acg, GPS gps)
 
 		if (!isnan(gps.bearing[gpsI].x))
 		{
-			yaw[i].x = gps.bearing[gpsI].x;
-			yaw[i].x = gps.bearing[gpsI].x * ratio + yawCahce[i] * (1 - ratio);
-			if (yaw[i].x > 360)
+			yaw[i].x = yawAv.additionalValue(gps.bearing[gpsI].x * pi / 180 + gyro.yaw[i].x + yawAdjuster) / 2;
+			if (gpsI != gpsold)
 			{
-				yaw[i].x -= 360;
-			}
-			if (yaw[i].x < 0)
-			{
-				yaw[i].x += 360;
+				yawAdjuster = yaw[i].x - gps.bearing[gpsI].x;
+				gpsold = gpsI;
 			}
 		}
 

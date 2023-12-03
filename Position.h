@@ -19,7 +19,7 @@ public:
 	Position();
 	Position(GPS gps);
 private:
-	const double EarthRadius = 6371.0;
+	const double EarthRadius = 6371.0*1000;
 	std::tuple <double, double, double>gps_to_cartesian(double latitude, double longitude, double altitude);
 };
 

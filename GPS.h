@@ -26,9 +26,7 @@ public:
 	std::vector<_CRT_DOUBLE> satellites;	//count how many satellits
 	
 	std::vector<_CRT_DOUBLE> myDist;
-	std::vector<_CRT_DOUBLE> x;
-	std::vector<_CRT_DOUBLE> y;
-	std::vector<_CRT_DOUBLE> z;
+
 
 	size_t entries = 0;
 	GPS();

@@ -15,7 +15,7 @@ public:
 
 
 	Speed() = default;
-	Speed(GPS gps, ACG acg);
+	Speed(ACG acg);
 	void filter();
 	~Speed();
 

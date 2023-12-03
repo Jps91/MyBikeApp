@@ -120,6 +120,10 @@ size_t GYRO::findClosestElement(double target)
 			i = i + (end - begin) / 2;
 		}
 	}
+	if (i<0||i>time.size())
+	{
+		return 0;
+	}
 	return i;
 }
 

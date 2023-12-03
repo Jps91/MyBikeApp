@@ -1,8 +1,11 @@
 #include "Speed.h"
 
-Speed::Speed(GPS gps, ACG acg)
+Speed::Speed(ACG acg)
 {
-	time.resize(acg.entries + 1);
+	
+	acg.correctMounting(acg.correctMountingresult(100));
+	GPS gps("");
+	time = acg.time;
 	speed.resize(acg.entries + 1);
 	double speed_temp = 0;
 	double gpsspeed = 0;
@@ -20,6 +23,7 @@ Speed::Speed(GPS gps, ACG acg)
 			speed_temp = 0;
 		}
 		speed[i].x = speed_temp;
+		
 	}
 
 }

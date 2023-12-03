@@ -103,18 +103,6 @@ GPS::GPS(std::string filePath)
 
 		myDist[i].x = d * 1000 + myDist[i - 1].x; // meters
 	}
-	const double EARTH_RADIUS = 6371000.0;
-	const double DEG_TO_RAD = 0.017453292519943295;
-	x.resize(entries);
-	y.resize(entries);
-	z.resize(entries);
-	for (size_t i = 0; i < entries; i++)
-	{
-		x[i].x = EARTH_RADIUS * longitude[i].x * DEG_TO_RAD;
-		y[i].x = EARTH_RADIUS * log(tan((90.0 + latitude[i].x) * DEG_TO_RAD / 2.0));
-		z[i].x = altitude[i].x;
-	}
-
 }
 
 size_t GPS::findClosestElement(double target)

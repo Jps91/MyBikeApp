@@ -17,7 +17,7 @@ public:
 	std::vector<_CRT_DOUBLE> tiltY;
 
 	Rotation();
-	Rotation(GYRO gyro, ACG acg, GPS gps);
+	Rotation(ACG acg);
 	~Rotation();
 };
 
