@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <filesystem>
+#include <iomanip>
+
+
 #include "GPS.h"
 #include "ACG.h"
 #include "GYRO.h"
@@ -10,6 +13,8 @@
 #include "Rotation.h"
 #include "Position.h"
 #include "SegmentsRide.h"
+
+
 
 int main()
 {
@@ -20,7 +25,7 @@ int main()
 	{
 		std::cerr << "Could not open: " << absolutePath.string() << std::endl;
 	}
-
+	outputFile << std::fixed << std::setprecision(5);
 
 	ACG acg("");
 	GPS gps("");
@@ -34,8 +39,8 @@ int main()
 		size_t gyroI = gyro.findClosestElement(acg.time[i].x);
 		if (pos.x.at(i).x!=0&& pos.y.at(i).x!=0)
 		{
-
-			outputFile << pos.x.at(i).x<< "	" << pos.y.at(i).x << "	" << rot.yaw[gyroI].x << '\n';
+			
+			outputFile << pos.x[i].x << "	" << pos.y[i].x << "	" <<   (gps.bearing[gpsI].x*pi/180) - rot.yaw[gyroI].x << '\n';
 		}
 	}
 	outputFile.close();

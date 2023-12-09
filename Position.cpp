@@ -31,11 +31,13 @@ Position::Position(GPS gps)
 		double xd = std::get<0>(result);
 		double yd = std::get<1>(result);
 		double zd = std::get<2>(result);
+
 		double delta_t = speed.time[i].x - speed.time[i - 1].x;
-		
-		double direction_rad = (rot.yaw[gyroI].x);	
+		double direction_rad = (rot.yaw[gyroI].x);
+
 		x[i].x = x[i - 1].x + speed.filtertspeed[i].x * delta_t * cos(direction_rad);
 		y[i].x = y[i - 1].x + speed.filtertspeed[i].x * delta_t * sin(direction_rad);
+
 
 		if (gpsI != oldgps)
 		{

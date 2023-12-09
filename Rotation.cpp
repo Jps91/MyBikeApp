@@ -55,16 +55,28 @@ Rotation::Rotation(ACG acg)
 		//rollCorrector = RollAv.additionalValue(gyro.roll[i].x);
 		roll[i].x = gyro.roll[i].x - averageResult;
 		//std::cout << rollCorrector << std::endl;
-
 		if (!isnan(gps.bearing[gpsI].x))
 		{
-			yaw[i].x = yawAv.additionalValue(gps.bearing[gpsI].x * pi / 180 + gyro.yaw[i].x + yawAdjuster) / 2;
+			// Convert gyro yaw to radians for consistency
+			double gyroYawRadians = gyro.yaw[i].x;
+
+			// Combine gyro, GPS, and adjuster to get a fused yaw in radians
+			double fusedYaw = yawAv.additionalValue((gps.bearing[gpsI].x * pi / 180.0 + gyroYawRadians + yawAdjuster)) / 2;
+
+			// Update yaw with the fused value
+			yaw[i].x = fusedYaw;
+
+			// If a new GPS point is reached, reset the yaw adjuster
 			if (gpsI != gpsold)
 			{
-				yawAdjuster = yaw[i].x - gps.bearing[gpsI].x;
+				// Adjust the yaw to match the GPS bearing
+				yawAdjuster = gyroYawRadians - gps.bearing[gpsI].x * pi / 180.0;
+
+				// Update the old GPS index
 				gpsold = gpsI;
 			}
 		}
+
 
 	}
 	tiltX.resize(acg.entries);
