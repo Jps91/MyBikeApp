@@ -5,37 +5,38 @@
 
 
 struct Coordinates {
-	double latitude;
-	double longitude;
-	double altitude;
+	long double latitude;
+	long double longitude;
+	long double altitude;
 };
 
-double calculateInclinationAngle(double deltaAltitude, double deltaDistance) {
+long double calculateInclinationAngle(long double deltaAltitude, long double deltaDistance) {
 	return atan(deltaAltitude / deltaDistance);
 }
 
-Coordinates calculateNextCoordinates(const Coordinates& current, double bearing, double speed, double deltaTime, double deltaAltitude) {
+Coordinates calculateNextCoordinates(const Coordinates& current, long double bearing, long double speed, long double deltaTime, long double deltaAltitude) 
+{
 	// Runge-Kutta method
-	double k1_lat = speed * deltaTime * cos(bearing);
-	double k1_lon = speed * deltaTime * sin(bearing);
+	long double k1_lat = speed * deltaTime * cos(bearing);
+	long double k1_lon = speed * deltaTime * sin(bearing);
 
-	double k2_lat = speed * deltaTime * cos(bearing + 0.5 * k1_lon);
-	double k2_lon = speed * deltaTime * sin(bearing + 0.5 * k1_lon);
+	long double k2_lat = speed * deltaTime * cos(bearing + 0.5 * k1_lon);
+	long double k2_lon = speed * deltaTime * sin(bearing + 0.5 * k1_lon);
 
-	double k3_lat = speed * deltaTime * cos(bearing + 0.5 * k2_lon);
-	double k3_lon = speed * deltaTime * sin(bearing + 0.5 * k2_lon);
+	long double k3_lat = speed * deltaTime * cos(bearing + 0.5 * k2_lon);
+	long double k3_lon = speed * deltaTime * sin(bearing + 0.5 * k2_lon);
 
-	double k4_lat = speed * deltaTime * cos(bearing + k3_lon);
-	double k4_lon = speed * deltaTime * sin(bearing + k3_lon);
+	long double k4_lat = speed * deltaTime * cos(bearing + k3_lon);
+	long double k4_lon = speed * deltaTime * sin(bearing + k3_lon);
 
-	double deltaLat = (k1_lat + 2 * k2_lat + 2 * k3_lat + k4_lat) / 6;
-	double deltaLon = (k1_lon + 2 * k2_lon + 2 * k3_lon + k4_lon) / 6;
+	long double deltaLat = (k1_lat + 2 * k2_lat + 2 * k3_lat + k4_lat) / 6;
+	long double deltaLon = (k1_lon + 2 * k2_lon + 2 * k3_lon + k4_lon) / 6;
 
-	double inclinationAngle = calculateInclinationAngle(deltaAltitude, 1.0);
+	long double inclinationAngle = calculateInclinationAngle(deltaAltitude, 1.0);
 
-	double newLatitude = current.latitude + deltaLat + deltaAltitude * tan(inclinationAngle);
-	double newLongitude = current.longitude + deltaLon;
-	double newAltitude = current.altitude + deltaAltitude * cos(inclinationAngle);
+	long double newLatitude = current.latitude + deltaLat + deltaAltitude * tan(inclinationAngle);
+	long double newLongitude = current.longitude + deltaLon;
+	long double newAltitude = current.altitude + deltaAltitude * cos(inclinationAngle);
 
 	return { newLatitude, newLongitude, newAltitude };
 }
@@ -65,8 +66,8 @@ Position::Position(GPS gps)
 		size_t gyroI = gyro.findClosestElement(acg.time[i].x);
 
 		Coordinates currentLocation{ x[i - 1].x ,y[i - 1].x ,z[i - 1].x };
-		Coordinates newLocation = calculateNextCoordinates(currentLocation, rot.yaw[gyroI].x, speed.filtertspeed[i].x / 100000, acg.time[i].x - acg.time[i - 1].x, 0);
-		//IDK why this newLocation is not working as it seems mathmatical correct. added /1000... to cope for enormes length issues, but its not the way to go
+		Coordinates newLocation = calculateNextCoordinates(currentLocation, rot.yaw[gyroI].x, speed.speed[i].x / 111319.9, acg.time[i].x - acg.time[i - 1].x, 0);
+		//IDK why, but when we use 1° ~= 111000m then it looks like it works
 
 
 		x[i].x = newLocation.latitude;
