@@ -25,7 +25,7 @@ int main()
 	{
 		std::cerr << "Could not open: " << absolutePath.string() << std::endl;
 	}
-	outputFile << std::fixed << std::setprecision(5);
+	outputFile << std::fixed << std::setprecision(7);
 
 	ACG acg("");
 	GPS gps("");
@@ -37,10 +37,11 @@ int main()
 	{
 		size_t gpsI = gps.findClosestElement(acg.time[i].x);
 		size_t gyroI = gyro.findClosestElement(acg.time[i].x);
-		if (pos.x.at(i).x!=0&& pos.y.at(i).x!=0)
+		//if (pos.x.at(i).x!=0&& pos.y.at(i).x!=0)
 		{
 			
-			outputFile << pos.x[i].x << "	" << pos.y[i].x << "	" <<   (gps.bearing[gpsI].x*pi/180) - rot.yaw[gyroI].x << '\n';
+			outputFile << pos.x[i].x << "	" << pos.y[i].x << "	" <<  rot.yaw[gyroI].x << '\n';
+			//outputFile << gps.latitude[gpsI].x << "	" << gps.longitude[gpsI].x << "	" << gps.bearing[gpsI].x*pi/180  << '\n';
 		}
 	}
 	outputFile.close();
