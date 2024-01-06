@@ -57,21 +57,14 @@ Rotation::Rotation(ACG acg)
 		//std::cout << rollCorrector << std::endl;
 		if (!isnan(gps.bearing[gpsI].x))
 		{
-			// Convert gyro yaw to radians for consistency
-			double gyroYawRadians = gyro.yaw[i].x;
-
-			// Combine gyro, GPS, and adjuster to get a fused yaw in radians
-			double fusedYaw = yawAv.additionalValue((gps.bearing[gpsI].x * pi / 180.0 + gyroYawRadians + yawAdjuster)) / 2;
-
-			// Update yaw with the fused value
-			yaw[i].x = fusedYaw;
-
-			// If a new GPS point is reached, reset the yaw adjuster
+			//double averageYaw = yawAv.additionalValue(gyro.yaw[i].x);
+			double delta_t = gyro.time[i].x - gyro.time[i - 1].x;
+			yaw[i].x = yaw[i-1].x  - gyro.z_true[i].x * delta_t;	//Because the Gyro +- is opposite of Bearing we changed from + to -
+				//yaw[i - 1].x + delta_t * yawAv.additionalValue(gyro.yaw[i].x);
 			if (gpsI != gpsold)
 			{
 				// Adjust the yaw to match the GPS bearing
-				yawAdjuster = gyroYawRadians - gps.bearing[gpsI].x * pi / 180.0;
-
+				yaw[i].x = gps.bearing[gpsI].x*pi/180;
 				// Update the old GPS index
 				gpsold = gpsI;
 			}
