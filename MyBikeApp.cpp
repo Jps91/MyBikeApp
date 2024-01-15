@@ -28,11 +28,14 @@ int main()
 	outputFile << std::fixed << std::setprecision(7);
 
 	ACG acg("");
+	acg.findRoationAngle();
+	//return 0;
 	GPS gps("");
 	GYRO gyro("");
 	Rotation rot(acg);
 	Position pos(gps);
-	size_t limit = acg.entries-1;
+	size_t limit = acg.entries - 1;
+	FastAverageDouble av(100);
 	for (size_t i = 0; i < limit; i++)
 	{
 		size_t gpsI = gps.findClosestElement(acg.time[i].x);
@@ -40,7 +43,7 @@ int main()
 		//if (pos.x.at(i).x!=0&& pos.y.at(i).x!=0)
 		{
 			
-			outputFile << pos.x[i].x << "	" << pos.y[i].x << "	" <<  rot.yaw[gyroI].x << '\n';
+			outputFile << pos.x[i].x << "	" << pos.y[i].x << "	" << av.additionalValue(sqrt(pow(acg.x[i].x, 2) + pow(acg.y[i].x, 2) + pow(acg.z[i].x, 2))) << '\n';
 			//outputFile << gps.latitude[gpsI].x << "	" << gps.longitude[gpsI].x << "	" << gps.bearing[gpsI].x*pi/180  << '\n';
 		}
 	}

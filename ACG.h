@@ -9,6 +9,7 @@
 
 #include "FastAverageDouble.h"
 #include "Filter.h"
+#include "Search_bisection.h"
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -34,20 +35,23 @@ public:
 	std::vector<_CRT_DOUBLE> yfilter;
 	std::vector<_CRT_DOUBLE> zfilter;
 
-
 	size_t entries = 0;
 	ACG();
 	ACG(std::string filepath);
 
 	void smoothIt();
-	void correctMounting(double angle);
+	void correctMounting();
 	size_t findClosestElemen(double target);
-	double correctMountingresult(double steps);
 	void filter();
+	double findRoationAngle();
+	double getMountigAngleDegree();
 	~ACG();
 
 private:
 	std::string fileName_m = "Location.csv";
 	double constrad = 0;
+	double createRotationTestResult(double angleDegrees);
+	double bisearch(double lower_bound, double upper_bound, double tolerance = 1e-9, double target_value = 9.807);
+	double mountigAngleDegree = 0;
 };
 

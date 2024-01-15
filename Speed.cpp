@@ -3,7 +3,7 @@
 Speed::Speed(ACG acg)
 {
 	
-	acg.correctMounting(acg.correctMountingresult(100));
+	acg.correctMounting();
 	GPS gps("");
 	time = acg.time;
 	speed.resize(acg.entries + 1);

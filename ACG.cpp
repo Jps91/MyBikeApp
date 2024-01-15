@@ -95,14 +95,18 @@ void ACG::smoothIt()
 
 }
 
-void ACG::correctMounting(double angleDegrees)
+void ACG::correctMounting()
 {
+	if (mountigAngleDegree==0)
+	{
+		findRoationAngle();
+	}
 	xtrue.resize(entries + 1);
 	ytrue.resize(entries + 1);
 	ztrue.resize(entries + 1);
+	double angle = mountigAngleDegree * (M_PI / 180.0);
 	for (size_t i = 0; i < entries; i++)
 	{
-		double angle = angleDegrees * (M_PI / 180.0);
 		// Speichern Sie die ursprünglichen Koordinaten
 		double originalX = x[i].x;
 		double originalY = y[i].x;
@@ -149,50 +153,6 @@ size_t ACG::findClosestElemen(double target)
 
 }
 
-double ACG::correctMountingresult(double steps)
-{
-
-	std::vector<double>result;
-	std::vector<double>angle;
-	result.resize(steps + 1);
-	angle.resize(steps + 1);
-	for (size_t i = 0; i < steps; i++)
-	{
-		double testingAngle = (i / steps) * 40;		//40=Max Angle
-		//std::cout << testingAngle << std::endl;
-		correctMounting(testingAngle);
-		FastAverageDouble av;
-		for (size_t j = 0; j < entries; j++)
-		{
-			result[i] = av.addValueNoFilter(ytrue[j].x);
-		}
-		av.~FastAverageDouble();
-		angle[i] = testingAngle;
-		//std::cout << result[i] << std::endl;
-
-	}
-
-	size_t begin = 0;
-	size_t end = result.size() - 1;
-	size_t i = 0;
-	double value = 0;
-	i = (end - begin) / 2;
-	while (end - begin != 1)
-	{
-		if (result[i] < value)
-		{
-			end = i;
-			i = i - (end - begin) / 2;
-		}
-		else if (result[i] > value)
-		{
-			begin = i;
-			i = i + (end - begin) / 2;
-		}
-	}
-	//result[i];	//accuracy
-	return angle[i];
-}
 void ACG::filter()
 {
 	xfilter.resize(entries);
@@ -206,7 +166,78 @@ void ACG::filter()
 		xfilter[i].x = x[i].x;
 	}
 }
+
+double ACG::findRoationAngle()
+{
+	mountigAngleDegree = bisearch(-30, 30, 0.0005, 0);
+	return 0.0;
+}
+
+double ACG::getMountigAngleDegree()
+{
+	if (mountigAngleDegree == 0)
+	{
+		findRoationAngle();
+	}
+	return mountigAngleDegree;
+}
+
 ACG::~ACG()
 {
 	;
+}
+
+double ACG::createRotationTestResult(double angleDegrees)
+{
+	std::vector<_CRT_DOUBLE> xCache;
+	std::vector<_CRT_DOUBLE> yCache;
+	std::vector<_CRT_DOUBLE> zCache;
+
+	xCache.resize(entries);
+	yCache.resize(entries);
+	zCache.resize(entries);
+
+	double angle = angleDegrees * (M_PI / 180.0);
+	for (size_t i = 0; i < entries; i++)
+	{
+		xCache[i].x = x[i].x;
+		yCache[i].x = y[i].x * cos(angle) - z[i].x * sin(angle);
+		zCache[i].x = y[i].x * sin(angle) + z[i].x * cos(angle);
+	}
+
+	FastAverageDouble av{};
+	double result = 0;
+	for (size_t j = 0; j < entries; j++)
+	{
+		result = av.addValueNoFilter(yCache[j].x);
+	}
+	av.~FastAverageDouble();
+	return result;
+}
+
+double ACG::bisearch(double lower_bound, double upper_bound, double tolerance, double target_value)	//if it is stuck in the while Loop, then try increasing return vlaue of createRotationTestResult or check if it is continuesly rising or falling, and if the target Value is in range of the tolerance 
+{
+	double result_middle = 0;
+	double middle = 0;
+	while ((upper_bound - lower_bound) > tolerance)
+	{
+		middle = (lower_bound + upper_bound) / 2;
+
+		result_middle = createRotationTestResult(middle);
+
+		if (result_middle == target_value)
+		{
+			return middle;
+		}
+		else if (result_middle * createRotationTestResult(lower_bound) < target_value)
+		{
+			upper_bound = middle;
+		}
+		else
+		{
+			lower_bound = middle;
+		}
+	}
+
+	return middle;
 }

@@ -8,7 +8,8 @@ Rotation::Rotation(ACG acg)
 {
 	GPS gps("");
 	GYRO gyro("");
-	double y_correction = acg.correctMountingresult(100);
+	double y_correction = acg.getMountigAngleDegree();
+	acg.correctMounting();
 	gyro.correctMounting(0, 0, y_correction);
 	gyro.rotationTrue();
 	size_t size = gyro.entries;
