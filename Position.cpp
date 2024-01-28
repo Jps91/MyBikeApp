@@ -14,7 +14,7 @@ long double calculateInclinationAngle(long double deltaAltitude, long double del
 	return atan(deltaAltitude / deltaDistance);
 }
 
-Coordinates calculateNextCoordinates(const Coordinates& current, long double bearing, long double speed, long double deltaTime, long double deltaAltitude) 
+Coordinates calculateNextCoordinates(const Coordinates& current, long double bearing, long double speed, long double deltaTime, long double deltaAltitude)
 {
 	// Runge-Kutta method
 	long double k1_lat = speed * deltaTime * cos(bearing);
@@ -69,7 +69,6 @@ Position::Position(GPS gps)
 		Coordinates newLocation = calculateNextCoordinates(currentLocation, rot.yaw[gyroI].x, speed.speed[i].x / 111319.9, acg.time[i].x - acg.time[i - 1].x, 0);
 		//IDK why, but when we use 1° ~= 111000m then it looks like it works
 
-
 		x[i].x = newLocation.latitude;
 		y[i].x = newLocation.longitude;
 		z[i].x = newLocation.altitude;
@@ -79,42 +78,88 @@ Position::Position(GPS gps)
 			oldgps = gpsI;
 			x[i].x = gps.latitude[gpsI].x;
 			y[i].x = gps.longitude[gpsI].x;
+			/*
 			std::cout << "---" << '\n';
-			std::cout << x[i].x - x[i - 1].x << '\n';
-			std::cout << y[i].x - y[i - 1].x << '\n';
+			std::cout << x.at(i).x - x.at(i - 1).x << '\n';
+			std::cout << y.at(i).x - y.at(i - 1).x << '\n';
 			std::cout << '\n';
 			//z[i].x = gps.altitude[gpsI].x;
+			*/
 		}
-
-		/*
-		if (gpsI < 0 || gpsI > gps.time.size() - 1 || gyroI < 0 || gyroI > gyro.time.size() - 1)
-		{
-			break;
-		}
-		auto result = gps_to_cartesian(gps.latitude[gpsI].x, gps.longitude[gpsI].x, gps.altitude[gpsI].x);
-		double xd = std::get<0>(result);
-		double yd = std::get<1>(result);
-		double zd = std::get<2>(result);
-
-		double delta_t = speed.time[i].x - speed.time[i - 1].x;
-		double direction_rad = (rot.yaw[gyroI].x);
-
-		//x[i].x = x[i - 1].x + speed.filtertspeed[i].x * delta_t * cos(direction_rad);
-		//y[i].x = y[i - 1].x + speed.filtertspeed[i].x * delta_t * sin(direction_rad);
-
-
-		if (gpsI != oldgps)
-		{
-			oldgps = gpsI;
-			x[i].x = xd;
-			y[i].x = yd;
-		}
-		x[i].x = xd;
-		y[i].x = yd;
-
-		z[i].x = zd;
-		*/
 	}
+
+	for (size_t gpsI = 1; gpsI < gps.entries - 2; gpsI++)
+	{
+		//A to B
+		std::vector<_CRT_DOUBLE> aToBx;
+		std::vector<_CRT_DOUBLE> aToBy;
+		std::vector<_CRT_DOUBLE> aToBz;
+
+		aToBx.resize(1);
+		aToBy.resize(1);
+		aToBz.resize(1);
+		aToBx[0].x = gps.latitude[gpsI].x;
+		aToBy[0].x = gps.longitude[gpsI].x;
+		aToBz[0].x = gps.altitude[gpsI].x;
+
+		size_t acgIAtoB = acg.findClosestElemen(gps.time[gpsI].x);
+		while (acg.time[acgIAtoB].x < gps.time[gpsI + 1].x)
+		{
+			acgIAtoB++;
+			size_t gyroI = gyro.findClosestElement(acg.time[acgIAtoB].x);
+			Coordinates currentLocation{ aToBx.back().x ,aToBy.back().x ,aToBz.back().x };
+			Coordinates newLocation = calculateNextCoordinates(currentLocation, rot.yaw[gyroI].x, speed.speed[acgIAtoB].x / 111319.9, acg.time[acgIAtoB].x - acg.time[acgIAtoB - 1].x, 0);
+
+			_CRT_DOUBLE lat{};
+			_CRT_DOUBLE lon{};
+			_CRT_DOUBLE alt{};
+
+			lat.x = newLocation.latitude;
+			lon.x = newLocation.longitude;
+			alt.x = newLocation.altitude;
+
+			aToBx.push_back(lat);
+			aToBy.push_back(lon);
+			aToBz.push_back(alt);
+		}
+
+		//B to A
+		std::vector<_CRT_DOUBLE> bToAx;
+		std::vector<_CRT_DOUBLE> bToAy;
+		std::vector<_CRT_DOUBLE> bToAz;
+		
+		bToAx.resize(1);
+		bToAy.resize(1);
+		bToAz.resize(1);
+		bToAx[0].x = gps.latitude[gpsI+1].x;
+		bToAy[0].x = gps.longitude[gpsI+1].x;
+		bToAz[0].x = gps.altitude[gpsI+1].x;
+
+		size_t acgIBtoA = acg.findClosestElemen(gps.time[gpsI].x + 1);
+
+		while (acg.time[acgIBtoA].x > gps.time[gpsI].x)
+		{
+			acgIBtoA++;
+			size_t gyroI = gyro.findClosestElement(acg.time[acgIBtoA].x);
+			Coordinates currentLocation{ bToAx.back().x ,bToAy.back().x ,bToAz.back().x };
+			Coordinates newLocation = calculateNextCoordinates(currentLocation, rot.yaw[gyroI].x, -speed.speed[acgIBtoA].x / 111319.9, acg.time[acgIBtoA].x - acg.time[acgIBtoA - 1].x, 0);
+
+			_CRT_DOUBLE lat{};
+			_CRT_DOUBLE lon{};
+			_CRT_DOUBLE alt{};
+
+			lat.x = newLocation.latitude;
+			lon.x = newLocation.longitude;
+			alt.x = newLocation.altitude;
+
+			bToAx.push_back(lat);
+			bToAy.push_back(lon);
+			bToAz.push_back(alt);
+		}
+
+		std::cout << (bToAx.back().x - aToBx.at(0).x) * 111319.9 << std::endl;
+	}
+
 }
 
 std::tuple<double, double, double> Position::gps_to_cartesian(double latitude, double longitude, double altitude)
@@ -129,23 +174,3 @@ std::tuple<double, double, double> Position::gps_to_cartesian(double latitude, d
 
 	return std::make_tuple(x, y, z);
 }
-
-
-
-/*
-	// Example usage
-	Coordinates currentLocation = { 37.7749, -122.4194, 0 }; // San Francisco coordinates
-	double bearing = 45.0; // Example bearing in degrees
-	double acceleration = 9.8; // Example acceleration in m/s^2 (approximate gravity on Earth)
-	double deltaTime = 10.0; // Example time interval in seconds
-	double inclinationAngle = atan(0.2); // Example inclination angle in radians (adjust as needed)
-
-	Coordinates nextLocation = calculateNextCoordinates(currentLocation, bearing, acceleration, deltaTime, inclinationAngle);
-
-	std::cout << "Next GPS coordinates after " << deltaTime << " seconds:\n";
-	std::cout << "Latitude: " << nextLocation.latitude << "\n";
-	std::cout << "Longitude: " << nextLocation.longitude << "\n";
-	std::cout << "Altitude: " << nextLocation.altitude << "\n";
-
-	return 0;
-	*/

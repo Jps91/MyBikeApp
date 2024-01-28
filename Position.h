@@ -6,7 +6,7 @@
 #include "FastAverageDouble.h"
 #include "Rotation.h"
 #include "Speed.h"
-
+#include "Interpolation.h"
 class Position
 {
 public:
