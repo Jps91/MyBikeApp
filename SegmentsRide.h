@@ -18,7 +18,7 @@ public:
 
 	std::map<int, SegmentType, size_t> map;
 
-	SegmentsRide(GPS gps);
+	SegmentsRide(GPS_old gps);
 	double calculateStandardDeviation(const std::vector<double>& data);
 private:
 	int mapNumber = 0;

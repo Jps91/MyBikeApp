@@ -5,6 +5,6 @@
 class LeanAngle
 {
 	LeanAngle();
-	LeanAngle(GPS,GYRO);
+	LeanAngle(GPS_old,GYRO);
 };
 

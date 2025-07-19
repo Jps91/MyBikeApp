@@ -1,11 +1,11 @@
 #include "GPS.h"
+#include <filesystem>
 
-GPS::GPS()
+GPS_old::GPS_old()
 {
 	;
 }
-#include <filesystem>
-GPS::GPS(std::string filePath)
+GPS_old::GPS_old(std::string filePath)
 {
 	std::filesystem::path relativePath = "Data\\Location.csv";
 	std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
@@ -105,21 +105,20 @@ GPS::GPS(std::string filePath)
 	}
 }
 
-size_t GPS::findClosestElement(double target)
+size_t GPS_old::findClosestElement(double target)
 {
 	size_t begin = 0;
 	size_t end = time.size() - 1;
 	size_t i = 0;
-	double value = target;
 	i = (end - begin) / 2;
 	while (end - begin != 1)
 	{
-		if (time[i].x > value)
+		if (time[i].x > target)
 		{
 			end = i;
 			i = i - (end - begin) / 2;
 		}
-		else if (time[i].x < value)
+		else if (time[i].x < target)
 		{
 			begin = i;
 			i = i + (end - begin) / 2;
@@ -129,6 +128,6 @@ size_t GPS::findClosestElement(double target)
 }
 
 
-GPS::~GPS()
+GPS_old::~GPS_old()
 {
 }

@@ -45,7 +45,7 @@ Position::Position()
 {
 }
 
-Position::Position(GPS gps)
+Position::Position(GPS_old gps)
 {
 	GYRO gyro("");
 	ACG acg("");

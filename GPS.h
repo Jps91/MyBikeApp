@@ -10,7 +10,7 @@
 #define M_PI (3.14159265358979323846264338327950288)
 #endif
 
-class GPS
+class GPS_old
 {
 public:
 	std::vector<_CRT_DOUBLE> time;				//Seconds as Double
@@ -29,10 +29,10 @@ public:
 
 
 	size_t entries = 0;
-	GPS();
-	GPS(std::string filePath);
+	GPS_old();
+	GPS_old(std::string filePath);
 	size_t findClosestElement(double target);
-	~GPS();
+	~GPS_old();
 private:
 	std::string fileName_m = "Location.csv";
 };

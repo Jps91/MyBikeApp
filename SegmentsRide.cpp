@@ -1,6 +1,6 @@
 #include "SegmentsRide.h"
 
-SegmentsRide::SegmentsRide(GPS gps)
+SegmentsRide::SegmentsRide(GPS_old gps)
 {
 	size_t entries = gps.entries;
 

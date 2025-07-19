@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ACG.cpp" />
+    <ClCompile Include="Algorithms.cpp" />
     <ClCompile Include="FastAverageDouble.cpp" />
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="GPS.cpp" />
@@ -141,10 +142,13 @@
     <ClCompile Include="Rotation.cpp" />
     <ClCompile Include="Search_bisection.cpp" />
     <ClCompile Include="SegmentsRide.cpp" />
+    <ClCompile Include="RecordingSession.cpp" />
     <ClCompile Include="Speed.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ACG.h" />
+    <ClInclude Include="Algorithms.h" />
+    <ClInclude Include="DataStructure.h" />
     <ClInclude Include="FastAverageDouble.h" />
     <ClInclude Include="Filter.h" />
     <ClInclude Include="GPS.h" />
@@ -156,6 +160,7 @@
     <ClInclude Include="Rotation.h" />
     <ClInclude Include="Search_bisection.h" />
     <ClInclude Include="SegmentsRide.h" />
+    <ClInclude Include="RecordingSession.h" />
     <ClInclude Include="Speed.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
