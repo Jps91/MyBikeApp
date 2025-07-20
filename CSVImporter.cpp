@@ -25,19 +25,20 @@ CSVData CSVImporter::importData(std::string fullFileName, std::string delimiterL
 		m_ListOfDelimiter = delimiterList;
 	}
 
-	m_inputFile.seekg(0);
+	m_inputFile.seekg(0, std::ios::beg);
 	std::string cachedLine;
-		size_t headlineLineCount = 0;
+	size_t newRowSize= m_lineCount;
 	if (m_hasHeadLine)
 	{
 		std::getline(m_inputFile, cachedLine);
-		headlineLineCount++;
+		newRowSize -=1;			//because we skipp the first line for the Data
 		m_csvData.setRowLabels(parseLineToSegments(cachedLine));
 	}
 
+	
 	for (size_t i = 0; i < m_csvData.rows.size(); i++)
 	{
-		m_csvData.rows[i].resize(m_lineCount - headlineLineCount);
+		m_csvData.rows[i].resize(newRowSize);
 	}
 
 	size_t currentLineCount = 0;
@@ -47,14 +48,14 @@ CSVData CSVImporter::importData(std::string fullFileName, std::string delimiterL
 		cachedSegments = parseLineToSegments(cachedLine);
 		if (cachedSegments.size() == m_csvData.rows.size())
 		{
-			for (size_t i = 0; i < cachedSegments.size()-headlineLineCount; i++)
+			for (size_t i = 0; i < cachedSegments.size(); i++)
 			{
 				m_csvData.rows[i][currentLineCount] = cachedSegments[i];
 			}
 		}
 		currentLineCount++;
 	}
-	m_inputFile.seekg(0);
+	m_inputFile.seekg(0, std::ios::beg);
 	m_inputFile.close();
 	return m_csvData;
 }
@@ -67,7 +68,7 @@ void CSVImporter::isHeadlinePresent()	//Side effect: sets the curso to the begin
 	{
 		return;
 	}
-	m_inputFile.seekg(0);
+	m_inputFile.seekg(0, std::ios::beg);
 	std::string cachedLine;
 	std::getline(m_inputFile, cachedLine);
 
@@ -77,15 +78,8 @@ void CSVImporter::isHeadlinePresent()	//Side effect: sets the curso to the begin
 		return;
 	}
 
-	if (std::isalpha(cachedLine[0]))
-	{
-		m_hasHeadLine=false;
-	}
-	else
-	{
-		m_hasHeadLine = true;
-	}
-	m_inputFile.seekg(0);
+	m_hasHeadLine = !std::isalpha(cachedLine[0]);
+	m_inputFile.seekg(0, std::ios::beg);
 }
 
 void CSVImporter::countLines()
@@ -95,45 +89,59 @@ void CSVImporter::countLines()
 	{
 		return;
 	}
-	m_inputFile.seekg(0);
-	std::string cacheLine;
+	m_inputFile.seekg(0, std::ios::beg);
 	m_lineCount = 0;
+	std::string cacheLine;
 	while (std::getline(m_inputFile, cacheLine))
 	{
-		m_lineCount++;
+		++m_lineCount;
 	}
 
-	m_inputFile.seekg(0);
+	m_inputFile.seekg(0, std::ios::beg);
+
+	
 }
 
 std::vector<std::string> CSVImporter::parseLineToSegments(std::string line)	//TODO: Faster by setting resizing first.
 {
-	std::vector<std::string>segments;
-	std::string tempSegment{};
-	size_t lineSize = line.size();
-	for (size_t i = 0; i < lineSize; i++)
+	std::vector<std::string> segments;
+	std::string tempSegment;
+
+	// Optional: reserve estimated capacity to reduce reallocations
+	size_t estimatedSegments = 1;
+	for (char delim : m_ListOfDelimiter)
+		estimatedSegments += std::count(line.begin(), line.end(), delim);
+	segments.reserve(estimatedSegments);
+
+	for (char ch : line)
 	{
-		for (size_t d = 0; d < m_ListOfDelimiter.size(); d++)
+		// Check if current char is any delimiter
+		bool isDelimiter = false;
+		for (char delim : m_ListOfDelimiter)
 		{
-			if (line[i] == m_ListOfDelimiter[d])
+			if (ch == delim)
 			{
-				segments.push_back(tempSegment);
-				tempSegment.resize(0);
-				break;
-			}
-			else
-			{
-				tempSegment += line[i];
+				isDelimiter = true;
 				break;
 			}
 		}
 
+		if (isDelimiter)
+		{
+			segments.push_back(std::move(tempSegment)); // move for efficiency
+			tempSegment.clear();
+		}
+		else
+		{
+			tempSegment.push_back(ch);
+		}
 	}
-	if (tempSegment.size() != 0)
+
+	if (!tempSegment.empty())
 	{
-		segments.push_back(tempSegment);
-		tempSegment.resize(0);
+		segments.push_back(std::move(tempSegment));
 	}
+
 	return segments;
 }
 
