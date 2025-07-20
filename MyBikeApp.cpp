@@ -20,19 +20,11 @@ int main()
 	RecordingSession track;
 	track.initialize(folder, folder + "Output\\");
 
-
-	
-
-	CSVImporter csvFiles;
-	
-	CSVData csvDataACG;
-	CSVData csvDataGPS;
-	csvDataACG = csvFiles.importData(folder + filenameACG,"");
-	csvDataGPS = csvFiles.importData(folder + filenameGPS,"");
-	
-	//csvDataACG.print();
-	csvDataGPS.print();
-
+	GPS gps(folder + filenameGPS);
+	for (size_t i = 0; i < gps.gHight.size; i++)
+	{
+		std::cout << gps.gPos.time[i] << "	" << gps.gPos.latitude[i] << "	" << gps.gPos.longitude[i] << "\n";
+	}
 
 	return 0;
 }

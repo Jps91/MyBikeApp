@@ -75,88 +75,35 @@ GPS::GPS()
 
 GPS::GPS(std::string fullFilePath)
 {
-	std::fstream inputFile(fullFilePath, std::ios::in | std::ios::binary);
-	if (!inputFile)
+	CSVImporter importGPS;
+	CSVData gpsData;
+	gpsData = importGPS.importData(fullFilePath, "");
+
+	size_t dataSize = gpsData.rows[0].size();
+
+	gPos.resizeAll(dataSize);
+	gHight.resizeAll(dataSize);
+	gSpeed.resizeAll(dataSize);
+	gRot.resizeAll(dataSize);
+
+	for (size_t i = 0; i < gpsData.rows[0].size(); i++)
 	{
-		std::cout << "ERROR: Could not open File: " << fullFilePath << "\n";
+		double cacheTime = std::stod(gpsData.rows[0][i]);
+
+		gPos.time[i] = cacheTime;
+		gPos.latitude[i] = std::stod(gpsData.rows[1][i]);
+		gPos.longitude[i] = std::stod(gpsData.rows[2][i]);
+
+		gHight.time[i] = cacheTime;
+		gHight.hight[i] = std::stod(gpsData.rows[3][i]);
+		gHight.gpsAccuracyVertical[i] = std::stod(gpsData.rows[7][i]);
+
+		gSpeed.time[i] = cacheTime;
+		gSpeed.speed[i] = std::stod(gpsData.rows[4][i]);
+
+		gRot.time[i] = cacheTime;
+		gRot.global_yaw[i] = std::stod(gpsData.rows[5][i]);
 	}
-	std::string tempLine;
-	tempLine.reserve(128);
-	size_t lineCount{};
-	while (std::getline(inputFile, tempLine))
-	{
-		lineCount++;
-	}
-	inputFile.close();
-
-	m_worldPosition.resize(lineCount);
-	m_worldPosition.unit = DegreesLatitude;
-	m_worldPositionAccuracy.resize(lineCount);
-	m_worldPositionAccuracy.unit = DegreesLongitude;
-	m_hight.resize(lineCount);
-	m_hight.unit = Meters;
-	m_hightAccuracy.resize(lineCount);
-	m_hightAccuracy.unit = Meters;
-	m_velocity.resize(lineCount);
-	m_velocity.unit = MetersPerSecond;
-	m_bearing.resize(lineCount);
-	m_bearing.unit = Degrees360;
-
-	inputFile.open(fullFilePath, std::ios::in | std::ios::binary);
-
-
-	if (lineCount<=m_DataStartOffset)
-	{
-		std::cout << "Error: DataStartOffset ist larger then the File\n";
-	}
-
-	for (size_t i = 0; i < m_DataStartOffset; i++)
-	{
-		std::getline(inputFile, tempLine);
-	}
-	std::vector<std::string>segments{};
-	size_t measuringIndex = 0;
-
-	while (std::getline(inputFile, tempLine))
-	{
-		std::string tempSegment{};
-		size_t lineSize = tempLine.size();
-		for (size_t i = 0; i < lineSize; i++)
-		{
-			
-			if (tempLine[i] == m_delimiter[0] || tempLine[i] == m_newlineCharacter[0])
-			{
-				segments.push_back(tempSegment);
-				tempSegment.resize(0);
-			}
-			else
-			{
-				tempSegment += tempLine[i];
-			}
-		}
-		if (tempSegment.size() != 0)
-		{
-			segments.push_back(tempSegment);
-			tempSegment.resize(0);
-		}
-		if (segments.size() < 7)
-		{
-			std::cerr << "ERROR: In the File is missing a DataRow, or Value: " << fullFilePath <<"	"<<segments.size() << "\n";
-			return;
-		}
-		double tempTime = std::stod(segments[0]);
-		m_worldPosition.v[measuringIndex].set(std::stod(segments[1]), tempTime);
-		m_worldPosition.w[measuringIndex].set(std::stod(segments[2]), tempTime);
-		m_hight.u[measuringIndex].set(std::stod(segments[3]), tempTime);
-		m_velocity.u[measuringIndex].set(std::stod(segments[4]), tempTime);
-		m_bearing.u[measuringIndex].set(std::stod(segments[5]), tempTime);
-		m_worldPositionAccuracy.u[measuringIndex].set(std::stod(segments[6]), tempTime);
-		m_hightAccuracy.u[measuringIndex].set(std::stod(segments[7]), tempTime);
-		segments.resize(0);
-
-		measuringIndex++;
-	}
-	inputFile.close();
 }
 
 GPS::~GPS()

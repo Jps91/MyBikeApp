@@ -5,7 +5,7 @@ CSVImporter::CSVImporter()
 	;
 }
 
-CSVData CSVImporter::importData(std::string fullFileName, std::string delimiterList)
+CSVData CSVImporter::importData(std::string fullFileName, std::string delimiterList)	//empty delimiter =>tab,;,\n
 {
 	CSVData m_csvData{};
 	m_fullFileName = fullFileName;

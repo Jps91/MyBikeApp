@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdio.h>
 
+
 enum Units
 {
 	Meters,
@@ -52,6 +53,175 @@ enum Units
 	Sieverts,     // Dose equivalent
 	Katals        // Catalytic activity
 };
+
+
+struct GlobalPosition
+{
+	std::vector<double>time;
+	std::vector<double>latitude;
+	std::vector<double>longitude;
+	std::vector<double>gpsAccuracyHorizontal;
+
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		latitude.resize(newSize, 0);
+		longitude.resize(newSize, 0);
+		gpsAccuracyHorizontal.resize(newSize, 0);
+	};
+};
+
+struct GlobalSpeed
+{
+	std::vector<double>time;
+	std::vector<double>speed;
+
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		speed.resize(newSize, 0);
+	};
+};
+
+struct GlobalHight		//The Hight above NN (Normal Null / Sealevel)
+{
+	std::vector<double>time;
+	std::vector<double>hight;
+	std::vector<double>gpsAccuracyVertical;
+
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		hight.resize(newSize, 0);
+		gpsAccuracyVertical.resize(newSize, 0);
+	};
+	
+};
+struct GlobalRotaion
+{
+	std::vector<double>time;
+	std::vector<double>global_roll;
+	std::vector<double>global_pitch;
+	std::vector<double>global_yaw;	//bearing
+
+	//NOTE: Bearing and Yaw are not the same.
+	//Yaw does not depend on the postion change while driving. BUT the effect might be less noticeable then the yaw drift.
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		global_roll.resize(newSize, 0);
+		global_pitch.resize(newSize, 0);
+		global_yaw.resize(newSize, 0);
+	};
+};
+
+struct LocalDistance
+{
+	std::vector<double>time;
+	std::vector<double>x;
+	std::vector<double>y;
+	std::vector<double>z;
+
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		x.resize(newSize, 0);
+		y.resize(newSize, 0);
+		z.resize(newSize, 0);
+	};
+};
+
+struct LocalSpeed
+{
+	std::vector<double>time;
+	std::vector<double>x;
+	std::vector<double>y;
+	std::vector<double>z;
+
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		x.resize(newSize, 0);
+		y.resize(newSize, 0);
+		z.resize(newSize, 0);
+	};
+};
+
+struct LocalAcceleration
+{
+	std::vector<double>time;
+	std::vector<double>x;
+	std::vector<double>y;
+	std::vector<double>z;
+
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		x.resize(newSize, 0);
+		y.resize(newSize, 0);
+		z.resize(newSize, 0);
+	};
+};
+
+struct LocalRoation
+{
+	std::vector<double>time;
+	std::vector<double>roll;
+	std::vector<double>pitch;
+	std::vector<double>yaw;
+
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		roll.resize(newSize, 0);
+		yaw.resize(newSize, 0);
+		pitch.resize(newSize, 0);
+	};
+};
+
+struct LocalRoationSpeed
+{
+	std::vector<double>time;
+	std::vector<double>rollPerSecond;
+	std::vector<double>pitchPerSecond;
+	std::vector<double>yawPerSecond;
+
+	size_t size;
+
+	void resizeAll(size_t& newSize)
+	{
+		size = newSize;
+		time.resize(newSize, 0);
+		rollPerSecond.resize(newSize, 0);
+		pitchPerSecond.resize(newSize, 0);
+		yawPerSecond.resize(newSize, 0);
+	};
+};
+
 
 
 

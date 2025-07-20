@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "DataStructure.h"
+#include "CSVImporter.h"
 
 //TODO: Maybe Add Config File for (defalut) settings importing
 
@@ -25,24 +26,17 @@ private:
 class GPS :public Sensor
 {
 public:
+	GlobalPosition gPos;
+	GlobalHight gHight;
+	GlobalSpeed gSpeed;
+	GlobalRotaion gRot;
+
+public:
 	GPS();
 	GPS(std::string fullFilePath);
 	~GPS();
-private:
-	std::string m_sensorName = "GPS";
-	std::string m_fileName = "Location.csv";
-	const size_t m_numberOfDataRows = 8;				//counted from CSV File
-	const std::string m_delimiter = "	";
-	const std::string m_newlineCharacter = "\n";
-	const size_t m_DataStartOffset = 1;
-
-	Measurements2D m_worldPosition;
-	Measurements1D m_worldPositionAccuracy;
-	Measurements1D m_hight;
-	Measurements1D m_hightAccuracy;
-	Measurements1D m_velocity;
-	Measurements1D m_bearing;
 };
+
 
 
 class RecordingSession
