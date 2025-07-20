@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="ACG.cpp" />
     <ClCompile Include="Algorithms.cpp" />
+    <ClCompile Include="CSVImporter.cpp" />
     <ClCompile Include="FastAverageDouble.cpp" />
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="GPS.cpp" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="ACG.h" />
     <ClInclude Include="Algorithms.h" />
+    <ClInclude Include="CSVImporter.h" />
     <ClInclude Include="DataStructure.h" />
     <ClInclude Include="FastAverageDouble.h" />
     <ClInclude Include="Filter.h" />

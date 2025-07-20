@@ -7,7 +7,7 @@
 
 #include "DataStructure.h"
 #include "RecordingSession.h"
-
+#include "CSVImporter.h"
 
 
 int main()
@@ -21,8 +21,13 @@ int main()
 	track.initialize(folder, folder + "Output\\");
 
 
-	GPS gps(folder + filenameGPS);
+	//GPS gps(folder + filenameGPS);
 
+	CSVImporter csvFile(folder + filenameACG);
+	csvFile.importData("");
 	
+
+
+
 	return 0;
 }
