@@ -24,9 +24,13 @@ int main()
 	//GPS gps(folder + filenameGPS);
 
 	CSVImporter csvFile(folder + filenameACG);
-	csvFile.importData("");
+	CSVData csvData;
+	CSVData csvData2;
+	csvData = csvFile.importData("");
+	csvData2 = csvFile.importData("");
 	
-
+	csvData.print();
+	csvData2.print();
 
 
 	return 0;

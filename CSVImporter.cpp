@@ -13,11 +13,14 @@ CSVImporter::CSVImporter(std::string fullFileName)
 	countLines();
 }
 
-void CSVImporter::importData(std::string delimiterList)
+CSVData CSVImporter::importData(std::string delimiterList)
 {
+	CSVData m_csvData{};
+	m_inputFile.clear();
 	if (!m_inputFile.is_open())
 	{
-		return;
+		std::cerr << "Error:	Could not Import Data form File: " << m_fullFileName << "\n";
+		return m_csvData;
 	}
 	if (!delimiterList.empty())
 	{
@@ -26,27 +29,27 @@ void CSVImporter::importData(std::string delimiterList)
 
 	m_inputFile.seekg(0);
 	std::string cachedLine;
-	size_t currentLineCount = 0;
+		size_t headlineLineCount = 0;
 	if (m_hasHeadLine)
 	{
 		std::getline(m_inputFile, cachedLine);
-		currentLineCount++;
+		headlineLineCount++;
 		m_csvData.setRowLabels(parseLineToSegments(cachedLine));
 	}
 
 	for (size_t i = 0; i < m_csvData.rows.size(); i++)
 	{
-		m_csvData.rows[i].resize(m_lineCount - currentLineCount);
+		m_csvData.rows[i].resize(m_lineCount - headlineLineCount);
 	}
 
-
+	size_t currentLineCount = 0;
 	while (std::getline(m_inputFile, cachedLine))
 	{
 		std::vector<std::string>cachedSegments;
 		cachedSegments = parseLineToSegments(cachedLine);
 		if (cachedSegments.size() == m_csvData.rows.size())
 		{
-			for (size_t i = 0; i < cachedSegments.size(); i++)
+			for (size_t i = 0; i < cachedSegments.size()-headlineLineCount; i++)
 			{
 				m_csvData.rows[i][currentLineCount] = cachedSegments[i];
 			}
@@ -55,10 +58,13 @@ void CSVImporter::importData(std::string delimiterList)
 	}
 	m_inputFile.seekg(0);
 	m_inputFile.close();
+	return m_csvData;
 }
+
 
 void CSVImporter::isHeadlinePresent()	//Side effect: sets the curso to the beginning
 {
+	m_inputFile.clear();
 	if (!m_inputFile.is_open())
 	{
 		return;
@@ -75,13 +81,18 @@ void CSVImporter::isHeadlinePresent()	//Side effect: sets the curso to the begin
 
 	if (std::isalpha(cachedLine[0]))
 	{
-		m_hasHeadLine;
+		m_hasHeadLine=false;
+	}
+	else
+	{
+		m_hasHeadLine = true;
 	}
 	m_inputFile.seekg(0);
 }
 
 void CSVImporter::countLines()
 {
+	m_inputFile.clear();
 	if (!m_inputFile.is_open())
 	{
 		return;
@@ -142,4 +153,26 @@ void CSVData::setRowLabels(std::vector<std::string> labelList)
 		rowLabel[i] = labelList[i];
 	}
 	rows.resize(rowCount);
+}
+
+void CSVData::print()
+{
+	if (rows[0].empty())
+	{
+		std::cerr << "Warining:	Could not Print DataRow is Empty";
+		return;
+	}
+	for (size_t rowNumber = 0; rowNumber < rowLabel.size(); rowNumber++)
+	{
+		std::cout << rowLabel[rowNumber] << "	";
+	}
+	std::cout << "\n";
+	for (size_t i = 0; i < rows[0].size(); i++)
+	{
+		for (size_t rowNumber = 0; rowNumber < rowLabel.size(); rowNumber++)
+		{
+			std::cout << rows[rowNumber][i] << "	";
+		}
+		std::cout << "\n";
+	}
 }
