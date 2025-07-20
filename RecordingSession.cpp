@@ -11,6 +11,9 @@ void RecordingSession::initialize(std::string inputFolderPath, std::string Outpu
 {
 	setCSVInputFolder(inputFolderPath);
 	setCSVOutputFolder(OutputfolderPath);
+
+	GPS tempGPSSensor(inputFolderPath);
+	gpsSensor = tempGPSSensor;
 }
 
 bool RecordingSession::setCSVInputFolder(std::string folderPath)
@@ -73,11 +76,11 @@ GPS::GPS()
 	;
 }
 
-GPS::GPS(std::string fullFilePath)
+GPS::GPS(std::string folderPath)
 {
 	CSVImporter importGPS;
 	CSVData gpsData;
-	gpsData = importGPS.importData(fullFilePath, "");
+	gpsData = importGPS.importData(folderPath+ m_fileName, "");
 
 	size_t dataSize = gpsData.rows[0].size();
 

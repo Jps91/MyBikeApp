@@ -33,14 +33,18 @@ public:
 
 public:
 	GPS();
-	GPS(std::string fullFilePath);
+	GPS(std::string folderPath);
 	~GPS();
+private:
+	std::string m_fileName = "Location.csv";	//TODO: Load Value form Settings
 };
 
 
 
 class RecordingSession
 {
+public:
+	GPS gpsSensor;
 public:
 	RecordingSession();
 	void initialize(std::string inputFolderPath, std::string OutputfolderPath);

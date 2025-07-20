@@ -20,10 +20,12 @@ int main()
 	RecordingSession track;
 	track.initialize(folder, folder + "Output\\");
 
-	GPS gps(folder + filenameGPS);
-	for (size_t i = 0; i < gps.gHight.size; i++)
+	GlobalPosition gps;
+	gps = track.gpsSensor.gPos;
+
+	for (size_t i = 0; i < track.gpsSensor.gHight.size; i++)
 	{
-		std::cout << gps.gPos.time[i] << "	" << gps.gPos.latitude[i] << "	" << gps.gPos.longitude[i] << "\n";
+		std::cout << gps.time[i] << "	" << gps.latitude[i] << "	" << gps.longitude[i] << "\n";
 	}
 
 	return 0;
