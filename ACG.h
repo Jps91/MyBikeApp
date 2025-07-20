@@ -15,7 +15,7 @@
 #endif
 
 
-class ACG
+class ACG_old
 {
 public:
 	std::vector<_CRT_DOUBLE> time;				//Seconds as Double
@@ -36,8 +36,8 @@ public:
 	std::vector<_CRT_DOUBLE> zfilter;
 
 	size_t entries = 0;
-	ACG();
-	ACG(std::string filepath);
+	ACG_old();
+	ACG_old(std::string filepath);
 
 	void smoothIt();
 	void correctMounting();
@@ -45,7 +45,7 @@ public:
 	void filter();
 	double findRoationAngle();
 	double getMountigAngleDegree();
-	~ACG();
+	~ACG_old();
 
 private:
 	std::string fileName_m = "Location.csv";

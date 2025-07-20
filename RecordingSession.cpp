@@ -14,6 +14,9 @@ void RecordingSession::initialize(std::string inputFolderPath, std::string Outpu
 
 	GPS tempGPSSensor(inputFolderPath);
 	gpsSensor = tempGPSSensor;
+	
+	ACG tempACGSensor(inputFolderPath);
+	acgSensor = tempACGSensor;
 }
 
 bool RecordingSession::setCSVInputFolder(std::string folderPath)
@@ -80,7 +83,7 @@ GPS::GPS(std::string folderPath)
 {
 	CSVImporter importGPS;
 	CSVData gpsData;
-	gpsData = importGPS.importData(folderPath+ m_fileName, "");
+	gpsData = importGPS.importData(folderPath + m_fileName, "");
 
 	size_t dataSize = gpsData.rows[0].size();
 
@@ -110,6 +113,35 @@ GPS::GPS(std::string folderPath)
 }
 
 GPS::~GPS()
+{
+	;
+}
+
+ACG::ACG()
+{
+	;
+}
+
+ACG::ACG(std::string folderPath)
+{
+	CSVImporter importACG;
+	CSVData acgData;
+	acgData = importACG.importData(folderPath + m_fileName, "");
+
+	size_t dataSize = acgData.rows[0].size();
+
+	acg.resizeAll(dataSize);
+
+	for (size_t i = 0; i < acgData.rows[0].size(); i++)
+	{
+		acg.time[i] = std::stod(acgData.rows[0][i]);
+		acg.x[i] = std::stod(acgData.rows[1][i]);
+		acg.y[i] = std::stod(acgData.rows[2][i]);
+		acg.z[i] = std::stod(acgData.rows[3][i]);
+	}
+}
+
+ACG::~ACG()
 {
 	;
 }

@@ -15,7 +15,7 @@ public:
 
 
 	Speed() = default;
-	Speed(ACG acg);
+	Speed(ACG_old acg);
 	void filter();
 	~Speed();
 

@@ -1,6 +1,6 @@
 #include "Speed.h"
 
-Speed::Speed(ACG acg)
+Speed::Speed(ACG_old acg)
 {
 	
 	acg.correctMounting();

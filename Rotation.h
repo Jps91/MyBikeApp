@@ -17,7 +17,7 @@ public:
 	std::vector<_CRT_DOUBLE> tiltY;
 
 	Rotation();
-	Rotation(ACG acg);
+	Rotation(ACG_old acg);
 	~Rotation();
 };
 

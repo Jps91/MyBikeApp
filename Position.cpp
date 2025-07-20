@@ -48,7 +48,7 @@ Position::Position()
 Position::Position(GPS_old gps)
 {
 	GYRO gyro("");
-	ACG acg("");
+	ACG_old acg("");
 	Speed speed(acg);
 	speed.filter();
 	Rotation rot(acg);

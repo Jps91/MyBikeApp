@@ -4,7 +4,7 @@ Rotation::Rotation()
 {
 }
 
-Rotation::Rotation(ACG acg)
+Rotation::Rotation(ACG_old acg)
 {
 	GPS_old gps("");
 	GYRO gyro("");

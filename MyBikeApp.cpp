@@ -28,5 +28,14 @@ int main()
 		std::cout << gps.time[i] << "	" << gps.latitude[i] << "	" << gps.longitude[i] << "\n";
 	}
 
+	LocalAcceleration acg;
+	acg = track.acgSensor.acg;
+
+	for (size_t i = 0; i < acg.size; i++)
+	{
+		std::cout << acg.time[i] << "	" << acg.x[i] << "	" << acg.y[i] << "\n";
+	}
+
+
 	return 0;
 }

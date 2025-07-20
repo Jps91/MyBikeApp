@@ -1,11 +1,11 @@
 #include "ACG.h"
 
-ACG::ACG()
+ACG_old::ACG_old()
 {
 	;
 }
 
-ACG::ACG(std::string filepath)
+ACG_old::ACG_old(std::string filepath)
 {
 	std::filesystem::path relativePath = "Data\\Accelerometer.csv";
 	std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
@@ -58,7 +58,7 @@ ACG::ACG(std::string filepath)
 
 }
 
-void ACG::smoothIt()
+void ACG_old::smoothIt()
 {
 	std::filesystem::path relativePath = "Data\\Accelerometer_out.csv";
 	std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
@@ -95,7 +95,7 @@ void ACG::smoothIt()
 
 }
 
-void ACG::correctMounting()
+void ACG_old::correctMounting()
 {
 	if (mountigAngleDegree==0)
 	{
@@ -119,7 +119,7 @@ void ACG::correctMounting()
 	}
 }
 
-size_t ACG::findClosestElemen(double target)
+size_t ACG_old::findClosestElemen(double target)
 {
 
 	int left = 0;
@@ -153,7 +153,7 @@ size_t ACG::findClosestElemen(double target)
 
 }
 
-void ACG::filter()
+void ACG_old::filter()
 {
 	xfilter.resize(entries);
 	FrequnceTimeFilter tFilter(0.5, 0.8);
@@ -167,13 +167,13 @@ void ACG::filter()
 	}
 }
 
-double ACG::findRoationAngle()
+double ACG_old::findRoationAngle()
 {
 	mountigAngleDegree = bisearch(-30, 30, 0.0005, 0);
 	return 0.0;
 }
 
-double ACG::getMountigAngleDegree()
+double ACG_old::getMountigAngleDegree()
 {
 	if (mountigAngleDegree == 0)
 	{
@@ -182,12 +182,12 @@ double ACG::getMountigAngleDegree()
 	return mountigAngleDegree;
 }
 
-ACG::~ACG()
+ACG_old::~ACG_old()
 {
 	;
 }
 
-double ACG::createRotationTestResult(double angleDegrees)
+double ACG_old::createRotationTestResult(double angleDegrees)
 {
 	std::vector<_CRT_DOUBLE> xCache;
 	std::vector<_CRT_DOUBLE> yCache;
@@ -215,7 +215,7 @@ double ACG::createRotationTestResult(double angleDegrees)
 	return result;
 }
 
-double ACG::bisearch(double lower_bound, double upper_bound, double tolerance, double target_value)	//if it is stuck in the while Loop, then try increasing return vlaue of createRotationTestResult or check if it is continuesly rising or falling, and if the target Value is in range of the tolerance 
+double ACG_old::bisearch(double lower_bound, double upper_bound, double tolerance, double target_value)	//if it is stuck in the while Loop, then try increasing return vlaue of createRotationTestResult or check if it is continuesly rising or falling, and if the target Value is in range of the tolerance 
 {
 	double result_middle = 0;
 	double middle = 0;
