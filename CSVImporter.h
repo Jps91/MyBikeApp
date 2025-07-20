@@ -18,8 +18,8 @@ struct CSVData
 class CSVImporter
 {
 public:
-	CSVImporter(std::string fullFileName);
-	CSVData importData(std::string listOfDelimiter);
+	CSVImporter();
+	CSVData importData(std::string fullFileName, std::string listOfDelimiter);
 	~CSVImporter();
 
 

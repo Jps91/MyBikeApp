@@ -1,27 +1,25 @@
 #include "CSVImporter.h"
 
-CSVImporter::CSVImporter(std::string fullFileName)
+CSVImporter::CSVImporter()
 {
+	;
+}
+
+CSVData CSVImporter::importData(std::string fullFileName, std::string delimiterList)
+{
+	CSVData m_csvData{};
 	m_fullFileName = fullFileName;
 	m_inputFile.open(fullFileName, std::ios::in | std::ios::binary);
 	if (!m_inputFile)
 	{
 		std::cerr << "ERROR: Could not open File: " << fullFileName << "\n";
-		return;
+		return m_csvData;
 	}
 	isHeadlinePresent();
 	countLines();
-}
-
-CSVData CSVImporter::importData(std::string delimiterList)
-{
-	CSVData m_csvData{};
+	
 	m_inputFile.clear();
-	if (!m_inputFile.is_open())
-	{
-		std::cerr << "Error:	Could not Import Data form File: " << m_fullFileName << "\n";
-		return m_csvData;
-	}
+	
 	if (!delimiterList.empty())
 	{
 		m_ListOfDelimiter = delimiterList;
@@ -99,7 +97,7 @@ void CSVImporter::countLines()
 	}
 	m_inputFile.seekg(0);
 	std::string cacheLine;
-
+	m_lineCount = 0;
 	while (std::getline(m_inputFile, cacheLine))
 	{
 		m_lineCount++;

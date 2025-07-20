@@ -21,16 +21,17 @@ int main()
 	track.initialize(folder, folder + "Output\\");
 
 
-	//GPS gps(folder + filenameGPS);
-
-	CSVImporter csvFile(folder + filenameACG);
-	CSVData csvData;
-	CSVData csvData2;
-	csvData = csvFile.importData("");
-	csvData2 = csvFile.importData("");
 	
-	csvData.print();
-	csvData2.print();
+
+	CSVImporter csvFiles;
+	
+	CSVData csvDataACG;
+	CSVData csvDataGPS;
+	csvDataACG = csvFiles.importData(folder + filenameACG,"");
+	csvDataGPS = csvFiles.importData(folder + filenameGPS,"");
+	
+	//csvDataACG.print();
+	csvDataGPS.print();
 
 
 	return 0;
