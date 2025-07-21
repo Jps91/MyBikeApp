@@ -20,6 +20,7 @@ class CSVImporter
 public:
 	CSVImporter();
 	CSVData importData(std::string fullFileName, std::string listOfDelimiter);
+	CSVData importDataV2(const std::string &fullFileName, const std::string &listOfDelimiter);
 	~CSVImporter();
 
 
@@ -34,7 +35,8 @@ private:
 	size_t m_lineCount=0;
 
 	std::string m_ListOfDelimiter = "	;\n";
-	std::vector<std::string> parseLineToSegments(std::string line);
+	std::vector<std::string> parseLineToSegments(const std::string line);
+	std::vector<std::string> parseLineToSegmentsV2(const std::string& line);
 	
 	//TODO: Remove / deal with Comments
 	//TODO: Input Validation

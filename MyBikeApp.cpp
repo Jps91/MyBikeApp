@@ -11,14 +11,21 @@
 #include "CSVImporter.h"
 #include "Algorithms.h"
 
-double testPerformance() 
+double testPerformance()
 {
+	/////stuff you want to initialize befor starting the clock. E.g.: To test ceartain objects.
+	CSVImporter importer;
+	CSVData data;
+
+
+	//////////////////////
 	using namespace std::chrono;
 
 	auto start = high_resolution_clock::now();
 	///////////////////////Start with your code here:
-	
 
+
+	data = importer.importDataV2("C:\\temp\\MyBikeApp\\DemoData\\Gyroscope.csv", "");
 
 
 
@@ -27,11 +34,31 @@ double testPerformance()
 	auto end = high_resolution_clock::now();
 	duration<double, std::milli> elapsed = end - start;
 
-	return elapsed.count();  // return time in milliseconds
+	std::cout << "Time in Miliseconds: " << elapsed.count() << "\n";
+	return elapsed.count();
+}
+
+void testCycling(size_t n)
+{
+	std::vector<double>results;
+	for (size_t i = 0; i < n; i++)
+	{
+		results.push_back(testPerformance());
+	}
+	double sum = 0;
+	for (size_t i = 0; i < results.size(); i++)
+	{
+		sum += results[i];
+	}
+	double average = sum / results.size();
+
+	std::cout << "result: " << average << "\n";
 }
 
 int main()
 {
+	testCycling(10);
+	return 0;
 
 	std::string folder = "C:\\temp\\MyBikeApp\\DemoData\\";
 	std::string filenameGPS = "Location.csv";
@@ -65,11 +92,6 @@ int main()
 	{
 		//std::cout << gyro.time[i] << "	" << gyro.rollPerSecond[i] << "	" << gyro.pitchPerSecond[i] << "	" << gyro.yawPerSecond[i] << "\n";
 	}
-
-	double time = testPerformance();
-	std::cout << "Time in Miliseconds: " << time << "\n";
-
-
 
 	return 0;
 }
