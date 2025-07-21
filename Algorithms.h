@@ -1,9 +1,5 @@
 #pragma once
-#include "DataStructure.h"
+#include <vector>
 
-
-class Algorithms
-{
-
-};
+size_t findNextLowerElementIndex(const std::vector<double>& sortedList, const size_t listSize, const double target);
 

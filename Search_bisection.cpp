@@ -1,6 +1,6 @@
 #include "Search_bisection.h"
 
-double Search_bisection::bisection(double(*function)(double), double lower_bound, double upper_bound, double tolerance)
+double Search_bisection::bisection(double(*function)(double), double lower_bound, double upper_bound, double tolerance)     //calculates the squarroot
 {
     if (function(lower_bound) * function(upper_bound) > 0) 
     {
