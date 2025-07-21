@@ -7,7 +7,7 @@ Rotation::Rotation()
 Rotation::Rotation(ACG_old acg)
 {
 	GPS_old gps("");
-	GYRO gyro("");
+	GYRO_old gyro("");
 	double y_correction = acg.getMountigAngleDegree();
 	acg.correctMounting();
 	gyro.correctMounting(0, 0, y_correction);

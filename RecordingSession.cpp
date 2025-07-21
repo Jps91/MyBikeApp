@@ -17,6 +17,9 @@ void RecordingSession::initialize(std::string inputFolderPath, std::string Outpu
 	
 	ACG tempACGSensor(inputFolderPath);
 	acgSensor = tempACGSensor;
+	
+	GYRO tempGyroSensor(inputFolderPath);
+	gyroSensor = tempGyroSensor;
 }
 
 bool RecordingSession::setCSVInputFolder(std::string folderPath)
@@ -92,7 +95,7 @@ GPS::GPS(std::string folderPath)
 	gSpeed.resizeAll(dataSize);
 	gRot.resizeAll(dataSize);
 
-	for (size_t i = 0; i < gpsData.rows[0].size(); i++)
+	for (size_t i = 0; i < dataSize; i++)
 	{
 		double cacheTime = std::stod(gpsData.rows[0][i]);
 
@@ -132,7 +135,7 @@ ACG::ACG(std::string folderPath)
 
 	acg.resizeAll(dataSize);
 
-	for (size_t i = 0; i < acgData.rows[0].size(); i++)
+	for (size_t i = 0; i < dataSize; i++)
 	{
 		acg.time[i] = std::stod(acgData.rows[0][i]);
 		acg.x[i] = std::stod(acgData.rows[1][i]);
@@ -142,6 +145,35 @@ ACG::ACG(std::string folderPath)
 }
 
 ACG::~ACG()
+{
+	;
+}
+
+GYRO::GYRO()
+{
+	;
+}
+
+GYRO::GYRO(std::string folderPath)
+{
+	CSVImporter importGYRO;
+	CSVData gyroData;
+	gyroData = importGYRO.importData(folderPath+m_fileName,"");
+
+	size_t dataSize = gyroData.rows[0].size();
+
+	gyro.resizeAll(dataSize);
+
+	for (size_t i = 0; i < dataSize; i++)
+	{
+		gyro.time[i] = std::stod(gyroData.rows[0][i]);
+		gyro.rollPerSecond[i] = std::stod(gyroData.rows[1][i]);
+		gyro.pitchPerSecond[i] = std::stod(gyroData.rows[2][i]);
+		gyro.yawPerSecond[i] = std::stod(gyroData.rows[3][i]);
+	}
+}
+
+GYRO::~GYRO()
 {
 	;
 }

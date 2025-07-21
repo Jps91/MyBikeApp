@@ -23,19 +23,26 @@ int main()
 	GlobalPosition gps;
 	gps = track.gpsSensor.gPos;
 
-	for (size_t i = 0; i < track.gpsSensor.gHight.size; i++)
+	for (size_t i = 0; i < gps.size / 100; i++)
 	{
-		std::cout << gps.time[i] << "	" << gps.latitude[i] << "	" << gps.longitude[i] << "\n";
+		//std::cout << gps.time[i] << "	" << gps.latitude[i] << "	" << gps.longitude[i] << "\n";
 	}
 
 	LocalAcceleration acg;
 	acg = track.acgSensor.acg;
 
-	for (size_t i = 0; i < acg.size; i++)
+	for (size_t i = 0; i < acg.size / 100; i++)
 	{
-		std::cout << acg.time[i] << "	" << acg.x[i] << "	" << acg.y[i] << "\n";
+		//std::cout << acg.time[i] << "	" << acg.x[i] << "	" << acg.y[i] << "\n";
 	}
 
+	LocalRoationSpeed gyro;
+	gyro = track.gyroSensor.gyro;
+
+	for (size_t i = 0; i < gyro.size / 100; i++)
+	{
+		//std::cout << gyro.time[i] << "	" << gyro.rollPerSecond[i] << "	" << gyro.pitchPerSecond[i] << "	" << gyro.yawPerSecond[i] << "\n";
+	}
 
 	return 0;
 }

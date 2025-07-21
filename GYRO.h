@@ -8,7 +8,7 @@
 
 
 const double pi = 3.1415926535897932385;
-class GYRO
+class GYRO_old
 {
 public:
 	std::vector<_CRT_DOUBLE> time;
@@ -26,12 +26,12 @@ public:
 	std::vector<_CRT_DOUBLE>yaw;
 
 	size_t entries = 0;
-	GYRO(std::string filename);
+	GYRO_old(std::string filename);
 	void correctMounting(double yaw, double roll, double pitch);
 	void rotation();
 	void rotationTrue();
 	size_t findClosestElement(double target);
-	~GYRO();
+	~GYRO_old();
 
 private:
 	std::string fileName_m = "Gyroscope.csv";

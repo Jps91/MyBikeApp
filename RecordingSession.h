@@ -39,7 +39,7 @@ private:
 	std::string m_fileName = "Location.csv";	//TODO: Load Value form Settings
 };
 
-class ACG
+class ACG :public Sensor
 {
 public:
 	LocalAcceleration acg;
@@ -47,16 +47,29 @@ public:
 	ACG();
 	ACG(std::string folderPath);
 	~ACG();
-
 private:
 	std::string m_fileName = "Accelerometer.csv";	//Wrong Name leads to Errors!!
 };
+
+class GYRO :public Sensor
+{
+public:
+	LocalRoationSpeed gyro;
+public:
+	GYRO();
+	GYRO(std::string folderPath);
+	~GYRO();
+private:
+	std::string m_fileName = "Gyroscope.csv";
+};
+
 
 class RecordingSession
 {
 public:
 	GPS gpsSensor;
 	ACG acgSensor;
+	GYRO gyroSensor;
 public:
 	RecordingSession();
 	void initialize(std::string inputFolderPath, std::string OutputfolderPath);

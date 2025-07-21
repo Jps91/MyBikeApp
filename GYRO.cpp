@@ -1,7 +1,7 @@
 #include "GYRO.h"
 #include <filesystem>
 
-GYRO::GYRO(std::string filePath)
+GYRO_old::GYRO_old(std::string filePath)
 {
 	std::filesystem::path relativePath = "Data\\Gyroscope.csv";
 	std::filesystem::path absolutePath = std::filesystem::absolute(relativePath);
@@ -53,7 +53,7 @@ GYRO::GYRO(std::string filePath)
 	inputFile.close();
 }
 
-void GYRO::correctMounting(double yaw, double roll, double pitch)
+void GYRO_old::correctMounting(double yaw, double roll, double pitch)
 {
 	x_true.resize(entries + 1);
 	y_true.resize(entries + 1);
@@ -67,7 +67,7 @@ void GYRO::correctMounting(double yaw, double roll, double pitch)
 	}
 }
 
-void GYRO::rotationTrue()
+void GYRO_old::rotationTrue()
 {
 	yaw.resize(entries + 1);
 	pitch.resize(entries + 1);
@@ -83,7 +83,7 @@ void GYRO::rotationTrue()
 	}
 }
 
-void GYRO::rotation()
+void GYRO_old::rotation()
 {
 	yaw.resize(entries + 1);
 	pitch.resize(entries + 1);
@@ -100,7 +100,7 @@ void GYRO::rotation()
 
 }
 
-size_t GYRO::findClosestElement(double target)
+size_t GYRO_old::findClosestElement(double target)
 {
 	size_t begin = 0;
 	size_t end = time.size() - 1;
@@ -127,6 +127,6 @@ size_t GYRO::findClosestElement(double target)
 	return i;
 }
 
-GYRO::~GYRO()
+GYRO_old::~GYRO_old()
 {
 }
