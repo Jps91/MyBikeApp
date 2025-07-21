@@ -14,6 +14,7 @@
 double testPerformance()
 {
 	/////stuff you want to initialize befor starting the clock. E.g.: To test ceartain objects.
+
 	CSVImporter importer;
 	CSVData data;
 
@@ -24,8 +25,8 @@ double testPerformance()
 	auto start = high_resolution_clock::now();
 	///////////////////////Start with your code here:
 
-
-	data = importer.importDataV2("C:\\temp\\MyBikeApp\\DemoData\\Gyroscope.csv", "");
+	
+	data = importer.importDataV3("C:\\temp\\MyBikeApp\\DemoData\\Gyroscope.csv", "");
 
 
 

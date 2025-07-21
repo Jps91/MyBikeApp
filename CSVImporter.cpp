@@ -1,4 +1,5 @@
 #include "CSVImporter.h"
+#include <omp.h>
 
 CSVImporter::CSVImporter()
 {
@@ -138,6 +139,79 @@ CSVData CSVImporter::importDataV2(const std::string& fullFileName, const std::st
 	return csvData;
 }
 
+CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::string& listOfDelimiter)
+{
+
+
+	CSVData csvData;
+
+	//Open File:
+	std::fstream inputFile(fullFileName, std::ios::in | std::ios::binary);
+	if (!inputFile)
+	{
+		std::cerr << "ERROR: Could not open File: " << fullFileName << "\n";
+		return csvData;
+	}
+
+	inputFile.seekg(0, std::ios::end);
+	size_t fileSize = inputFile.tellg();
+	inputFile.seekg(0, std::ios::beg);
+
+	std::vector<char> fileBuffer(fileSize);
+	inputFile.read(fileBuffer.data(), fileSize);
+	inputFile.close();
+
+	std::vector<std::pair<const char*, size_t>> lineViews; // pointer + length
+	const char* start = fileBuffer.data();
+	const char* end = start + fileSize;
+	const char* lineStart = start;
+
+	for (const char* p = start; p < end; ++p) {
+		if (*p == '\n') {
+			lineViews.emplace_back(lineStart, p - lineStart);
+			lineStart = p + 1;
+		}
+	}
+	if (lineStart < end)
+		lineViews.emplace_back(lineStart, end - lineStart); // handle final line without newline
+
+	const char* firstLine = lineViews[0].first;
+	bool hasHeadLine = !(firstLine[0] >= '0' && firstLine[0] <= '9');
+
+
+
+	size_t numColumns = csvData.rowLabel.size();
+	csvData.rows.resize(numColumns);
+
+
+
+	for (auto& col : csvData.rows)
+		col.resize(lineViews.size() - (hasHeadLine ? 1 : 0));
+
+	size_t startLine = hasHeadLine ? 1 : 0;
+	size_t totalLines = lineViews.size() - startLine;
+
+	std::vector<std::vector<std::string>> parsedLines(totalLines);
+
+#pragma omp parallel for schedule(dynamic, 128)
+	for (size_t i = 0; i < totalLines; ++i) {
+		const auto& [linePtr, length] = lineViews[startLine + i];
+		std::string_view line(linePtr, length);
+		parsedLines[i] = parseLineToSegmentsV3(line); // must accept string_view
+	}
+	for (size_t row = 0; row < totalLines; ++row) {
+		const auto& segments = parsedLines[row];
+		if (segments.size() != numColumns)
+			continue;
+		for (size_t col = 0; col < numColumns; ++col) {
+			csvData.rows[col][row] = segments[col];
+		}
+	}
+
+
+	return CSVData();
+}
+
 
 void CSVImporter::isHeadlinePresent()	//Side effect: sets the curso to the beginning
 {
@@ -206,6 +280,40 @@ std::vector<std::string> CSVImporter::parseLineToSegmentsV2(const std::string& l
 		segments.emplace_back(data + start, len - start);
 
 	return segments;
+}
+
+std::vector<std::string> CSVImporter::parseLineToSegmentsV3(const std::string_view& line)
+{
+
+	const char* data = line.data();
+	size_t len = line.size();
+	std::vector<std::string> segments;
+	segments.reserve(4); // tune to expected column count
+
+	// O(1) delimiter lookup
+	bool isDelim[256] = {};
+	for (char d : m_ListOfDelimiter)
+		isDelim[static_cast<unsigned char>(d)] = true;
+
+	size_t start = 0;
+	for (size_t i = 0; i < len; ++i)
+	{
+		unsigned char c = static_cast<unsigned char>(data[i]);
+		if (isDelim[c])
+		{
+			size_t segLen = i - start;
+			segments.emplace_back(data + start, segLen);
+			start = i + 1;
+		}
+	}
+
+	// Handle last segment
+	if (start <= len)
+	{
+		segments.emplace_back(data + start, len - start);
+	}
+	return segments;
+
 }
 
 
