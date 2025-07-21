@@ -14,9 +14,13 @@
 double testPerformance()
 {
 	/////stuff you want to initialize befor starting the clock. E.g.: To test ceartain objects.
+	std::string folder = "C:\\temp\\MyBikeApp\\DemoData\\";
+	std::string filenameGPS = "Location.csv";
+	std::string filenameACG = "Accelerometer.csv";
+	std::string filenameGYRO = "Gyroscope.csv";
 
-	CSVImporter importer;
-	CSVData data;
+
+
 
 
 	//////////////////////
@@ -25,11 +29,10 @@ double testPerformance()
 	auto start = high_resolution_clock::now();
 	///////////////////////Start with your code here:
 
-	
-	data = importer.importDataV3("C:\\temp\\MyBikeApp\\DemoData\\Gyroscope.csv", "");
 
-
-
+	//ACG acg(folder);
+	//GPS gps(folder);
+	GYRO gyro(folder);
 
 	///////////////////////End with your code here
 	auto end = high_resolution_clock::now();

@@ -64,7 +64,7 @@ struct GlobalPosition
 
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);
@@ -81,7 +81,7 @@ struct GlobalSpeed
 
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);
@@ -97,7 +97,7 @@ struct GlobalHight		//The Hight above NN (Normal Null / Sealevel)
 
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);
@@ -117,7 +117,7 @@ struct GlobalRotaion
 	//Yaw does not depend on the postion change while driving. BUT the effect might be less noticeable then the yaw drift.
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);
@@ -136,7 +136,7 @@ struct LocalDistance
 
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);
@@ -155,7 +155,7 @@ struct LocalSpeed
 
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);
@@ -174,7 +174,7 @@ struct LocalAcceleration
 
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(const size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);
@@ -193,7 +193,7 @@ struct LocalRoation
 
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);
@@ -212,7 +212,7 @@ struct LocalRoationSpeed
 
 	size_t size;
 
-	void resizeAll(size_t& newSize)
+	void resizeAll(size_t newSize)
 	{
 		size = newSize;
 		time.resize(newSize, 0);

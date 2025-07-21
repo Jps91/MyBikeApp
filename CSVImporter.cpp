@@ -141,11 +141,9 @@ CSVData CSVImporter::importDataV2(const std::string& fullFileName, const std::st
 
 CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::string& listOfDelimiter)
 {
-
-
 	CSVData csvData;
 
-	//Open File:
+	// Open File:
 	std::fstream inputFile(fullFileName, std::ios::in | std::ios::binary);
 	if (!inputFile)
 	{
@@ -153,6 +151,7 @@ CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::st
 		return csvData;
 	}
 
+	// Read file into buffer
 	inputFile.seekg(0, std::ios::end);
 	size_t fileSize = inputFile.tellg();
 	inputFile.seekg(0, std::ios::beg);
@@ -161,7 +160,8 @@ CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::st
 	inputFile.read(fileBuffer.data(), fileSize);
 	inputFile.close();
 
-	std::vector<std::pair<const char*, size_t>> lineViews; // pointer + length
+	// Split buffer into line views
+	std::vector<std::pair<const char*, size_t>> lineViews;
 	const char* start = fileBuffer.data();
 	const char* end = start + fileSize;
 	const char* lineStart = start;
@@ -173,32 +173,53 @@ CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::st
 		}
 	}
 	if (lineStart < end)
-		lineViews.emplace_back(lineStart, end - lineStart); // handle final line without newline
+		lineViews.emplace_back(lineStart, end - lineStart); // Handle final line
 
+	if (lineViews.empty()) {
+		std::cerr << "ERROR: File is empty: " << fullFileName << "\n";
+		return csvData;
+	}
+
+	// Check for headline
 	const char* firstLine = lineViews[0].first;
 	bool hasHeadLine = !(firstLine[0] >= '0' && firstLine[0] <= '9');
 
+	size_t numColumns = 0;
 
+	// Set row labels
+	if (hasHeadLine) {
+		std::string_view headerView(lineViews[0].first, lineViews[0].second);
+		csvData.setRowLabels(parseLineToSegmentsV3(headerView));
+		numColumns = csvData.rowLabel.size();
+	}
+	else {
+		std::string_view firstLineView(lineViews[0].first, lineViews[0].second);
+		std::vector<std::string> inferred = parseLineToSegmentsV3(firstLineView);
+		numColumns = inferred.size();
+		csvData.rowLabel.resize(numColumns);
+		for (size_t i = 0; i < numColumns; ++i)
+			csvData.rowLabel[i] = "Col" + std::to_string(i);
+	}
 
-	size_t numColumns = csvData.rowLabel.size();
+	// Resize row storage
 	csvData.rows.resize(numColumns);
-
-
-
-	for (auto& col : csvData.rows)
-		col.resize(lineViews.size() - (hasHeadLine ? 1 : 0));
-
 	size_t startLine = hasHeadLine ? 1 : 0;
 	size_t totalLines = lineViews.size() - startLine;
 
+	for (auto& col : csvData.rows)
+		col.resize(totalLines);
+
+	// Parse each line in parallel
 	std::vector<std::vector<std::string>> parsedLines(totalLines);
 
 #pragma omp parallel for schedule(dynamic, 128)
 	for (size_t i = 0; i < totalLines; ++i) {
 		const auto& [linePtr, length] = lineViews[startLine + i];
 		std::string_view line(linePtr, length);
-		parsedLines[i] = parseLineToSegmentsV3(line); // must accept string_view
+		parsedLines[i] = parseLineToSegmentsV3(line);
 	}
+
+	// Fill into column-major format
 	for (size_t row = 0; row < totalLines; ++row) {
 		const auto& segments = parsedLines[row];
 		if (segments.size() != numColumns)
@@ -208,8 +229,7 @@ CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::st
 		}
 	}
 
-
-	return CSVData();
+	return csvData;
 }
 
 
@@ -395,5 +415,20 @@ void CSVData::print()
 			std::cout << rows[rowNumber][i] << "	";
 		}
 		std::cout << "\n";
+	}
+}
+
+void CSVData::setAllSize(const size_t newRowCount, const size_t newLineCount)
+{
+	dataLines = newLineCount;
+	rowCount = rowCount;
+	for (size_t i = 0; i < rowCount; i++)
+	{
+		rowLabel.resize(rowCount);
+		rows.resize(rowCount);
+	}
+	for (size_t i = 0; i < newLineCount; i++)
+	{
+		rows[i].resize(newLineCount);
 	}
 }
