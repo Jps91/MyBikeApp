@@ -22,27 +22,32 @@ double testPerformance()
 
 
 
-
+	RecordingSession track;
+	track.initialize(folder, folder);
 	//////////////////////
 	using namespace std::chrono;
 
 	auto start = high_resolution_clock::now();
 	///////////////////////Start with your code here:
 
+	QuanternionList deltaRotaion;
 
-	//ACG acg(folder);
-	//GPS gps(folder);
-	GYRO gyro(folder);
+	deltaRotaion.gyroMeasurementToQuanternions(track.gyroSensor.gyro.time, track.gyroSensor.gyro.rollPerSecond, track.gyroSensor.gyro.pitchPerSecond, track.gyroSensor.gyro.yawPerSecond);
+
+
 
 	///////////////////////End with your code here
 	auto end = high_resolution_clock::now();
 	duration<double, std::milli> elapsed = end - start;
 
+
 	std::cout << "Time in Miliseconds: " << elapsed.count() << "\n";
+
+	//deltaRotaion.print();
 	return elapsed.count();
 }
 
-void testCycling(size_t n)
+void testCycling(const size_t n)
 {
 	std::vector<double>results;
 	for (size_t i = 0; i < n; i++)

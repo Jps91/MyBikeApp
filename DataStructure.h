@@ -54,6 +54,106 @@ enum Units
 	Katals        // Catalytic activity
 };
 
+struct QuanternionList
+{
+	std::vector<double>time;
+
+	std::vector<double>w;
+	std::vector<double>x;
+	std::vector<double>y;
+	std::vector<double>z;
+
+	size_t size;
+	void resizeAll(size_t newSize)
+	{
+		size = newSize;
+		time.resize(size);
+		w.resize(size);
+		x.resize(size);
+		y.resize(size);
+		z.resize(size);
+	}
+
+	void normalize()
+	{
+		for (size_t i = 0; i < size; i++)
+		{
+			double n = std::sqrt(
+				w[i] * w[i] +
+				x[i] * x[i] +
+				y[i] * y[i] +
+				z[i] * z[i]);
+
+			if (n == 0)
+			{
+				n = DBL_MIN;
+			}
+			w[i] /= n;
+			x[i] /= n;
+			y[i] /= n;
+			z[i] /= n;
+		}
+	}
+
+	void gyroMeasurementToQuanternions(
+		const std::vector<double>& gyroTime,
+		const std::vector<double>& gyroX,
+		const std::vector<double>& gyroY,
+		const std::vector<double>& gyroZ)
+	{
+		size = gyroTime.size();
+		if (size < 2)
+		{
+			throw std::runtime_error("At least two gyro samples required");
+		}
+
+		time = gyroTime;
+
+		// Resize quaternion vectors to for delta quaternions between intervals NOTE: to Avoid div by 0 we fill the vectors with the angle 0 and dont calculate if we dont need to
+		w.resize(size, 1.0);
+		x.resize(size, 0.0);
+		y.resize(size, 0.0);
+		z.resize(size, 0.0);
+
+		// Compute delta quaternion for each interval
+		for (size_t i = 0; i < size - 1; ++i)
+		{
+			// Angular velocity vector magnitude
+			double omega_mag = std::sqrt(
+				gyroX[i] * gyroX[i] +
+				gyroY[i] * gyroY[i] +
+				gyroZ[i] * gyroZ[i]);
+
+			// If rotation, delta quaternion is identity  
+			if (omega_mag != 0.0)
+			{
+				// Angle rotated during dt
+				double half_theta = omega_mag * (gyroTime[i + 1] - gyroTime[i]) / 2.0;
+				double sin_half = std::sin(half_theta);
+
+				// Normalize axis and build quaternion
+				w[i] = std::cos(half_theta);
+				x[i] = (gyroX[i] / omega_mag) * sin_half;
+				y[i] = (gyroY[i] / omega_mag) * sin_half;
+				z[i] = (gyroZ[i] / omega_mag) * sin_half;
+			}
+		}
+	}
+	void print() const
+	{
+		//std::cout << std::fixed << std::setprecision(6);
+		for (size_t i = 0; i < w.size(); ++i)
+		{
+			std::cout << "delta_t [" << time[i] << " -> " << time[i + 1] << "]  "
+				<< "q = ["
+				<< w[i] << ", "
+				<< x[i] << ", "
+				<< y[i] << ", "
+				<< z[i] << "]\n";
+		}
+	}
+};
+
 
 struct GlobalPosition
 {
@@ -62,7 +162,7 @@ struct GlobalPosition
 	std::vector<double>longitude;
 	std::vector<double>gpsAccuracyHorizontal;
 
-	size_t size;
+	size_t size{};
 
 	void resizeAll(size_t newSize)
 	{
@@ -104,7 +204,7 @@ struct GlobalHight		//The Hight above NN (Normal Null / Sealevel)
 		hight.resize(newSize, 0);
 		gpsAccuracyVertical.resize(newSize, 0);
 	};
-	
+
 };
 struct GlobalRotaion
 {

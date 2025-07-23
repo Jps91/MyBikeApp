@@ -13,8 +13,8 @@ struct CSVData
 
 	void setRowLabels(std::vector<std::string>labelList);
 	void print();
-	size_t dataLines;
-	size_t rowCount;
+	size_t dataLines{};
+	size_t rowCount{};
 	void setAllSize(const size_t rows, const size_t lines);
 };
 
