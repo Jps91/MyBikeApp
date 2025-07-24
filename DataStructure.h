@@ -1,57 +1,214 @@
 #pragma once
 #include <vector>
 #include <stdio.h>
+#include <iostream>
 
-
-enum Units
+/*
+struct LocalCoordinateSystem
 {
-	Meters,
-	MetersPerSecond,
-	MetersPerSecondSquared,
+};
 
-	Degrees,
-	Degrees360,
-	DegreesPerSecond,
-	DegreesPerSecondSquared,
+struct GlobalCoordianteSystem
+{
+};
 
-	DegreesLatitude,
-	DegreesLongitude,
-	DegreesLatitudePerSecond,
-	DegreesLongitudePerSecond,
-	DegreesLatitudePerSecondSquared,
-	DegreesLongitudePerSecondSquared,
+template<typename Coordsystem>
+struct Rotation;
 
-	Radians,
-	Radians2Pi,
-	RadiansPerSecond,
-	RadiansPerSecondSquared,
+template<>
+struct Rotation<LocalCoordinateSystem>
+{
+	double roll, pitch, yaw;
+	Rotation(double roll = 0, double pitch = 0, double yaw = 0) :roll(roll), pitch(pitch), yaw(yaw) {};
+};
 
-	Kilograms,
-	Seconds,
-	Amperes,
-	Kelvins,
-	Moles,
-	Candelas,
 
-	Hertz,        // Frequency
-	Newtons,      // Force
-	Pascals,      // Pressure
-	Joules,       // Energy
-	Watts,        // Power
-	Coulombs,     // Electric charge
-	Volts,        // Electric potential
-	Farads,       // Capacitance
-	Ohms,         // Resistance
-	Siemens,      // Conductance
-	Webers,       // Magnetic flux
-	Teslas,       // Magnetic flux density
-	Henrys,       // Inductance
-	Lumens,       // Luminous flux
-	Lux,          // Illuminance
-	Becquerels,   // Radioactivity
-	Grays,        // Absorbed dose
-	Sieverts,     // Dose equivalent
-	Katals        // Catalytic activity
+
+Rotation<LocalCoordinateSystem> test{ 0,0,0 };
+*/
+
+struct BodyRotation_SpeedRadiansPerSecond
+{
+	double time;
+
+	double roll;
+	double pitch;
+	double yaw;
+};
+
+struct BodyRotation_SpeedDegreesPerSecond
+{
+	double time;
+
+	double roll;
+	double pitch;
+	double yaw;
+};
+
+struct BodyRotation_Degrees
+{
+	double time;
+
+	double roll;
+	double pitch;
+	double yaw;
+};
+
+struct BodyRotation_Radians
+{
+	double time;
+
+	double roll;
+	double pitch;
+	double yaw;
+};
+
+struct GlobalPosition_2D_GPS
+{
+	double time;
+
+	double latitude;
+	double longitude;
+};
+
+struct GlobalPosition_3D_GPS
+{
+	double time;
+
+	double latitude;
+	double longitude;
+	double hight;
+};
+
+struct Distance_1D_Meter
+{
+	double time;
+
+	double distance;
+};
+
+struct Acceleration_1D_MeterPerSecondSquared
+{
+	double time;
+
+	double acc;
+};
+
+struct Acceleration_3D_MeterPerSecondSquared
+{
+	double time;
+
+	double x;
+	double y;
+	double z;
+};
+
+struct Speed_1D_MeterPerSecond
+{
+	double time;
+	double v;
+};
+
+struct Speed_3D_MeterPerSecond
+{
+	double time;
+
+	double x;
+	double y;
+	double z;
+};
+
+struct Position_3D_Meter
+{
+	double time;
+
+	double x;
+	double y;
+	double z;
+};
+
+struct Accuracy_Meter
+{
+	double	time;
+	double accuracy;
+};
+
+
+struct Rotation_1D_Radians
+{
+	double time;
+
+	double rad;
+};
+
+struct Rotation_2D_Radians
+{
+	double time;
+
+	double x;
+	double y;
+};
+
+struct Rotation_3D_Radians
+{
+	double time;
+
+	double roll;
+	double pitch;
+	double yaw;
+};
+
+
+struct Rotation_1D_RadiansPerSecond
+{
+	double time;
+
+	double rad;
+};
+
+struct Rotation_2D_RadiansPerSecond
+{
+	double time;
+
+	double x;
+	double y;
+};
+
+struct Rotation_3D_RadiansPerSecond
+{
+	double time;
+
+	double roll;
+	double pitch;
+	double yaw;
+};
+
+
+struct Bearing_Degree
+{
+	double time;
+
+	double deg;
+};
+
+
+struct Rotation_3D_Quaternion
+{
+	double time;
+
+	double w = 1;
+	double x = 0;
+	double y = 0;
+	double z = 0;
+};
+
+struct Rotation_3D_Euler_Radians
+{
+	double time;
+
+	double roll;
+	double pitch;
+	double yaw;
 };
 
 struct QuanternionList
@@ -76,6 +233,7 @@ struct QuanternionList
 
 	void normalize()
 	{
+		size = w.size();
 		for (size_t i = 0; i < size; i++)
 		{
 			double n = std::sqrt(
@@ -101,12 +259,7 @@ struct QuanternionList
 		const std::vector<double>& gyroY,
 		const std::vector<double>& gyroZ)
 	{
-		size = gyroTime.size();
-		if (size < 2)
-		{
-			throw std::runtime_error("At least two gyro samples required");
-		}
-
+		size = gyroX.size();
 		time = gyroTime;
 
 		// Resize quaternion vectors to for delta quaternions between intervals NOTE: to Avoid div by 0 we fill the vectors with the angle 0 and dont calculate if we dont need to
@@ -141,7 +294,6 @@ struct QuanternionList
 	}
 	void print() const
 	{
-		//std::cout << std::fixed << std::setprecision(6);
 		for (size_t i = 0; i < w.size(); ++i)
 		{
 			std::cout << "delta_t [" << time[i] << " -> " << time[i + 1] << "]  "
@@ -150,6 +302,45 @@ struct QuanternionList
 				<< x[i] << ", "
 				<< y[i] << ", "
 				<< z[i] << "]\n";
+		}
+	}
+	void printEulerDegrees() const
+	{
+		for (size_t i = 0; i + 1 < w.size(); ++i)  // i+1 for time range printing
+		{
+			// Quaternion components
+			double qw = w[i];
+			double qx = x[i];
+			double qy = y[i];
+			double qz = z[i];
+
+			// Roll (x-axis rotation)
+			double sinr_cosp = 2.0 * (qw * qx + qy * qz);
+			double cosr_cosp = 1.0 - 2.0 * (qx * qx + qy * qy);
+			double roll = std::atan2(sinr_cosp, cosr_cosp);
+
+			// Pitch (y-axis rotation)
+			double sinp = 2.0 * (qw * qy - qz * qx);
+			double pitch;
+			if (std::abs(sinp) >= 1)
+				pitch = std::copysign(3.141592653589793 / 2, sinp);  // use 90 degrees if out of range
+			else
+				pitch = std::asin(sinp);
+
+			// Yaw (z-axis rotation)
+			double siny_cosp = 2.0 * (qw * qz + qx * qy);
+			double cosy_cosp = 1.0 - 2.0 * (qy * qy + qz * qz);
+			double yaw = std::atan2(siny_cosp, cosy_cosp);
+
+			// Convert radians to degrees
+			roll *= 180 / 3.141592653589793;
+			pitch *= 180 / 3.141592653589793;
+			yaw *= 180 / 3.141592653589793;
+
+			std::cout << "delta_t [" << time[i] << " -> " << time[i + 1] << "]  "
+				<< "Euler angles (deg): roll=" << roll
+				<< ", pitch=" << pitch
+				<< ", yaw=" << yaw << '\n';
 		}
 	}
 };
@@ -173,6 +364,9 @@ struct GlobalPosition
 		gpsAccuracyHorizontal.resize(newSize, 0);
 	};
 };
+
+
+
 
 struct GlobalSpeed
 {
@@ -347,62 +541,3 @@ struct DataPoint	//time cant be zero, to prevent divided by 0
 	//Some calculations could calculate stuff before the start at time 0. Therefore a time beginning offset might be handy.
 };
 
-
-struct Measurements1D
-{
-	std::vector<DataPoint>u;
-	Units unit;
-
-	void resize(size_t size)
-	{
-		u.resize(size, DataPoint{});
-	}
-	void newUnit(Units newUnit)
-	{
-		unit = newUnit;
-	}
-};
-
-struct Measurements2D
-{
-	std::vector<DataPoint>v;
-	std::vector<DataPoint>w;
-	Units unit;
-
-	void resize(size_t size)
-	{
-		v.resize(size, DataPoint{});
-		w.resize(size, DataPoint{});
-	}
-	void newUnit(Units newUnit)
-	{
-		unit = newUnit;
-	}
-};
-
-struct Measurements3D
-{
-	std::vector<DataPoint>x;
-	std::vector<DataPoint>y;
-	std::vector<DataPoint>z;
-	Units unit;
-
-	void resize(size_t size)
-	{
-		x.resize(size, DataPoint{});
-		y.resize(size, DataPoint{});
-		z.resize(size, DataPoint{});
-	}
-	void newUnit(Units newUnit)
-	{
-		unit = newUnit;
-	}
-};
-
-
-struct VehicleOrientation
-{
-	std::vector<Measurements3D>position;
-	std::vector<Measurements3D>direction;
-	std::vector<Measurements3D>speed;
-};
