@@ -87,56 +87,32 @@ GPS::GPS(std::string folderPath)
 	CSVImporter importGPS;
 	CSVData gpsData = importGPS.importDataV3(folderPath + m_fileName, "");
 
-	const size_t dataSize = gpsData.rows[0].size();
+	position_Anlge.resize(gpsData.valueLineCount);
+	bearing_degree.resize(gpsData.valueLineCount);
+	verticalAccuracy_meter.resize(gpsData.valueLineCount);
+	horizontalAccuracy_meter.resize(gpsData.valueLineCount);
+	speed_meterPerSecond.resize(gpsData.valueLineCount);
 
-	gPos.resizeAll(dataSize);
-	gHight.resizeAll(dataSize);
-	gSpeed.resizeAll(dataSize);
-	gRot.resizeAll(dataSize);
-
-	// Access columns once
-	const auto& colTime = gpsData.rows[0];
-	const auto& colLat = gpsData.rows[1];
-	const auto& colLong = gpsData.rows[2];
-	const auto& colHight = gpsData.rows[3];
-	const auto& colSpeed = gpsData.rows[4];
-	const auto& colYaw = gpsData.rows[5];
-	const auto& colAccuracy = gpsData.rows[7];
-
-	// Get raw data pointers for all vectors
-	double* timePosPtr = gPos.time.data();
-	double* latPtr = gPos.latitude.data();
-	double* longPtr = gPos.longitude.data();
-
-	double* timeHightPtr = gHight.time.data();
-	double* hightPtr = gHight.hight.data();
-	double* accVertPtr = gHight.gpsAccuracyVertical.data();
-
-	double* timeSpeedPtr = gSpeed.time.data();
-	double* speedPtr = gSpeed.speed.data();
-
-	double* timeRotPtr = gRot.time.data();
-	double* yawPtr = gRot.global_yaw.data();
-
-#pragma omp parallel for schedule(static)
-	for (size_t i = 0; i < dataSize; ++i)
+	for (size_t i = 0; i < gpsData.valueLineCount; i++)
 	{
-		// Use strtod for performance, avoid string_view or exceptions
-		const double cacheTime = std::strtod(colTime[i].c_str(), nullptr);
+		const double cacheTime = std::strtod(gpsData.value[0][i].c_str(), nullptr);
 
-		timePosPtr[i] = cacheTime;
-		latPtr[i] = std::strtod(colLat[i].c_str(), nullptr);
-		longPtr[i] = std::strtod(colLong[i].c_str(), nullptr);
+		position_Anlge[i].time = cacheTime;
+		position_Anlge[i].latitude = std::strtod(gpsData.value[1][i].c_str(), nullptr);
+		position_Anlge[i].longitude = std::strtod(gpsData.value[2][i].c_str(), nullptr);
+		position_Anlge[i].hight = std::strtod(gpsData.value[3][i].c_str(), nullptr);
 
-		timeHightPtr[i] = cacheTime;
-		hightPtr[i] = std::strtod(colHight[i].c_str(), nullptr);
-		accVertPtr[i] = std::strtod(colAccuracy[i].c_str(), nullptr);
+		speed_meterPerSecond[i].time = cacheTime;
+		speed_meterPerSecond[i].time = std::strtod(gpsData.value[4][i].c_str(), nullptr);
 
-		timeSpeedPtr[i] = cacheTime;
-		speedPtr[i] = std::strtod(colSpeed[i].c_str(), nullptr);
+		bearing_degree[i].time = cacheTime;
+		bearing_degree[i].time = std::strtod(gpsData.value[5][i].c_str(), nullptr);
 
-		timeRotPtr[i] = cacheTime;
-		yawPtr[i] = std::strtod(colYaw[i].c_str(), nullptr);
+		horizontalAccuracy_meter[i].time = cacheTime;
+		horizontalAccuracy_meter[i].time = std::strtod(gpsData.value[6][i].c_str(), nullptr);
+
+		verticalAccuracy_meter[i].time = cacheTime;
+		verticalAccuracy_meter[i].accuracy = std::strtod(gpsData.value[7][i].c_str(), nullptr);
 	}
 }
 
@@ -156,27 +132,14 @@ ACG::ACG(std::string folderPath)
 	CSVImporter importACG;
 	CSVData acgData = importACG.importDataV3(folderPath + m_fileName, "");
 
-	const size_t dataSize = acgData.rows[0].size(); // assumes all rows same size
-	acg.resizeAll(dataSize);
-
-	// Access columns directly
-	const std::vector<std::string>& col0 = acgData.rows[0];
-	const std::vector<std::string>& col1 = acgData.rows[1];
-	const std::vector<std::string>& col2 = acgData.rows[2];
-	const std::vector<std::string>& col3 = acgData.rows[3];
-
-	double* timePtr = acg.time.data();
-	double* xPtr = acg.x.data();
-	double* yPtr = acg.y.data();
-	double* zPtr = acg.z.data();
-
+	accelerationMeterPerSecond.resize(acgData.valueLineCount);
 #pragma omp parallel for schedule(static)
-	for (size_t i = 0; i < dataSize; ++i)
+	for (size_t i = 0; i < acgData.valueLineCount; i++)
 	{
-		timePtr[i] = std::strtod(col0[i].c_str(), nullptr);
-		xPtr[i] = std::strtod(col1[i].c_str(), nullptr);
-		yPtr[i] = std::strtod(col2[i].c_str(), nullptr);
-		zPtr[i] = std::strtod(col3[i].c_str(), nullptr);
+		accelerationMeterPerSecond[i].time = std::strtod(acgData.value[0][i].c_str(), nullptr);
+		accelerationMeterPerSecond[i].x = std::strtod(acgData.value[1][i].c_str(), nullptr);
+		accelerationMeterPerSecond[i].y = std::strtod(acgData.value[2][i].c_str(), nullptr);
+		accelerationMeterPerSecond[i].z = std::strtod(acgData.value[3][i].c_str(), nullptr);
 	}
 }
 
@@ -195,29 +158,14 @@ GYRO::GYRO(std::string folderPath)
 	CSVImporter importGYRO;
 	CSVData gyroData = importGYRO.importDataV3(folderPath + m_fileName, "");
 
-	const size_t dataSize = gyroData.rows[0].size();
-
-	gyro.resizeAll(dataSize);
-
-	// Access columns once
-	const auto& colTime = gyroData.rows[0];
-	const auto& colRoll = gyroData.rows[1];
-	const auto& colPitch = gyroData.rows[2];
-	const auto& colYaw = gyroData.rows[3];
-
-	// Get raw pointers to destination buffers
-	double* timePtr = gyro.time.data();
-	double* rollPtr = gyro.rollPerSecond.data();
-	double* pitchPtr = gyro.pitchPerSecond.data();
-	double* yawPtr = gyro.yawPerSecond.data();
-
+	rotation_RadiansPerSecond.resize(gyroData.valueLineCount);
 #pragma omp parallel for schedule(static)
-	for (size_t i = 0; i < dataSize; ++i)
+	for (size_t lineNumber = 0; lineNumber < gyroData.valueLineCount; lineNumber++)
 	{
-		timePtr[i] = std::strtod(colTime[i].c_str(), nullptr);
-		rollPtr[i] = std::strtod(colRoll[i].c_str(), nullptr);
-		pitchPtr[i] = std::strtod(colPitch[i].c_str(), nullptr);
-		yawPtr[i] = std::strtod(colYaw[i].c_str(), nullptr);
+		rotation_RadiansPerSecond[lineNumber].time = std::strtod(gyroData.value[0][lineNumber].c_str(), nullptr);
+		rotation_RadiansPerSecond[lineNumber].roll = std::strtod(gyroData.value[1][lineNumber].c_str(), nullptr);
+		rotation_RadiansPerSecond[lineNumber].pitch = std::strtod(gyroData.value[2][lineNumber].c_str(), nullptr);
+		rotation_RadiansPerSecond[lineNumber].yaw = std::strtod(gyroData.value[3][lineNumber].c_str(), nullptr);
 	}
 }
 

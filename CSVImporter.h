@@ -9,13 +9,14 @@
 struct CSVData
 {
 	std::vector<std::string>rowLabel{};
-	std::vector<std::vector<std::string>>rows;
+	std::vector<std::vector<std::string>>value;
 
 	void setRowLabels(std::vector<std::string>labelList);
 	void print();
-	size_t dataLines{};
+	size_t valueLineCount{};
 	size_t rowCount{};
-	void setAllSize(const size_t rows, const size_t lines);
+	void setAllSize(const size_t value, const size_t lines);
+	std::vector<std::string>get(size_t index);
 };
 
 class CSVImporter

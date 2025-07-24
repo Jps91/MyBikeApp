@@ -36,9 +36,9 @@ CSVData CSVImporter::importData(std::string fullFileName, std::string delimiterL
 		csvData.setRowLabels(parseLineToSegments(cachedLine));
 	}
 
-	for (size_t i = 0; i < csvData.rows.size(); i++)
+	for (size_t i = 0; i < csvData.value.size(); i++)
 	{
-		csvData.rows[i].resize(newRowSize);
+		csvData.value[i].resize(newRowSize);
 	}
 
 	size_t currentLineCount = 0;
@@ -46,11 +46,11 @@ CSVData CSVImporter::importData(std::string fullFileName, std::string delimiterL
 	{
 		std::vector<std::string>cachedSegments;
 		cachedSegments = parseLineToSegments(cachedLine);
-		if (cachedSegments.size() == csvData.rows.size())
+		if (cachedSegments.size() == csvData.value.size())
 		{
 			for (size_t i = 0; i < cachedSegments.size(); i++)
 			{
-				csvData.rows[i][currentLineCount] = cachedSegments[i];
+				csvData.value[i][currentLineCount] = cachedSegments[i];
 			}
 		}
 		currentLineCount++;
@@ -113,10 +113,10 @@ CSVData CSVImporter::importDataV2(const std::string& fullFileName, const std::st
 		csvData.setRowLabels(parseLineToSegmentsV2(cachedLine));
 	}
 
-	csvData.rows.resize(csvData.rowLabel.size());
+	csvData.value.resize(csvData.rowLabel.size());
 	for (size_t i = 0; i < csvData.rowLabel.size(); i++)
 	{
-		csvData.rows[i].resize(dataSize);
+		csvData.value[i].resize(dataSize);
 	}
 
 	size_t currentLineCount = hasHeadLine ? 0 : 1; // already inserted one preview row if no header
@@ -124,12 +124,12 @@ CSVData CSVImporter::importDataV2(const std::string& fullFileName, const std::st
 	while (std::getline(inputFile, cachedLine))
 	{
 		std::vector<std::string> cachedSegments = parseLineToSegmentsV2(cachedLine);
-		if (cachedSegments.size() == csvData.rows.size())
+		if (cachedSegments.size() == csvData.value.size())
 		{
 			for (size_t i = 0; i < cachedSegments.size(); ++i)
 			{
 				if (currentLineCount < dataSize)
-					csvData.rows[i][currentLineCount] = cachedSegments[i];
+					csvData.value[i][currentLineCount] = cachedSegments[i];
 			}
 			currentLineCount++;
 		}
@@ -142,8 +142,7 @@ CSVData CSVImporter::importDataV2(const std::string& fullFileName, const std::st
 CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::string& listOfDelimiter)
 {
 	CSVData csvData;
-
-	// Open File:
+	
 	std::fstream inputFile(fullFileName, std::ios::in | std::ios::binary);
 	if (!inputFile)
 	{
@@ -184,31 +183,28 @@ CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::st
 	const char* firstLine = lineViews[0].first;
 	bool hasHeadLine = !(firstLine[0] >= '0' && firstLine[0] <= '9');
 
-	size_t numColumns = 0;
-
 	// Set row labels
-	if (hasHeadLine) {
+	size_t numColumns = 0;
+	if (hasHeadLine) 
+	{
 		std::string_view headerView(lineViews[0].first, lineViews[0].second);
 		csvData.setRowLabels(parseLineToSegmentsV3(headerView));
 		numColumns = csvData.rowLabel.size();
 	}
-	else {
+	else 
+	{
 		std::string_view firstLineView(lineViews[0].first, lineViews[0].second);
 		std::vector<std::string> inferred = parseLineToSegmentsV3(firstLineView);
 		numColumns = inferred.size();
-		csvData.rowLabel.resize(numColumns);
+		csvData.setAllSize(numColumns, lineViews.size());
 		for (size_t i = 0; i < numColumns; ++i)
 			csvData.rowLabel[i] = "Col" + std::to_string(i);
 	}
 
-	// Resize row storage
-	csvData.rows.resize(numColumns);
 	size_t startLine = hasHeadLine ? 1 : 0;
-	size_t totalLines = lineViews.size() - startLine;
-
-	for (auto& col : csvData.rows)
-		col.resize(totalLines);
-
+	csvData.setAllSize(numColumns, lineViews.size() - startLine);
+	size_t totalLines = csvData.valueLineCount;
+	
 	// Parse each line in parallel
 	std::vector<std::vector<std::string>> parsedLines(totalLines);
 
@@ -225,7 +221,7 @@ CSVData CSVImporter::importDataV3(const std::string& fullFileName, const std::st
 		if (segments.size() != numColumns)
 			continue;
 		for (size_t col = 0; col < numColumns; ++col) {
-			csvData.rows[col][row] = segments[col];
+			csvData.value[col][row] = segments[col];
 		}
 	}
 
@@ -389,30 +385,36 @@ void CSVData::setRowLabels(std::vector<std::string> labelList)
 {
 	size_t rowCount = labelList.size();
 	rowLabel.resize(rowCount);
+	value.resize(rowCount);
 	for (size_t i = 0; i < rowCount; i++)
 	{
 		rowLabel[i] = labelList[i];
 	}
-	rows.resize(rowCount);
+	for (size_t i = 0; i < rowCount; i++)
+	{
+		value[i].resize(rowCount);
+	}
 }
 
 void CSVData::print()
 {
-	if (rows[0].empty())
+	if (value[0].empty())
 	{
 		std::cerr << "Warining:	Could not Print DataRow is Empty";
 		return;
 	}
+
 	for (size_t rowNumber = 0; rowNumber < rowLabel.size(); rowNumber++)
 	{
 		std::cout << rowLabel[rowNumber] << "	";
 	}
+
 	std::cout << "\n";
-	for (size_t i = 0; i < rows[0].size(); i++)
+	for (size_t i = 0; i < value[0].size(); i++)
 	{
 		for (size_t rowNumber = 0; rowNumber < rowLabel.size(); rowNumber++)
 		{
-			std::cout << rows[rowNumber][i] << "	";
+			std::cout << value[rowNumber][i] << "	";
 		}
 		std::cout << "\n";
 	}
@@ -420,15 +422,25 @@ void CSVData::print()
 
 void CSVData::setAllSize(const size_t newRowCount, const size_t newLineCount)
 {
-	dataLines = newLineCount;
-	rowCount = rowCount;
+	valueLineCount = newLineCount;
+	rowCount = newRowCount;
+
+	rowLabel.resize(rowCount);
+	value.resize(rowCount);
+
 	for (size_t i = 0; i < rowCount; i++)
 	{
-		rowLabel.resize(rowCount);
-		rows.resize(rowCount);
+		value[i].resize(valueLineCount);
 	}
-	for (size_t i = 0; i < newLineCount; i++)
+}
+
+std::vector<std::string> CSVData::get(size_t index)
+{
+	std::vector<std::string>result;
+	result.resize(rowCount);
+	for (size_t rowNumber = 0; rowNumber < rowCount; rowNumber++)
 	{
-		rows[i].resize(newLineCount);
+		result[rowNumber] = value[rowNumber][index];
 	}
+	return result;
 }

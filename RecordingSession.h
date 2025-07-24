@@ -26,10 +26,11 @@ private:
 class GPS :public Sensor
 {
 public:
-	GlobalPosition gPos;
-	GlobalHight gHight;
-	GlobalSpeed gSpeed;
-	GlobalRotaion gRot;
+	std::vector<GlobalPosition_3D_GPS> position_Anlge;
+	std::vector<Rotation_1D_Degree>bearing_degree;
+	std::vector<Accuracy_Meter>verticalAccuracy_meter;
+	std::vector<Accuracy_Meter>horizontalAccuracy_meter;
+	std::vector<Speed_1D_MeterPerSecond> speed_meterPerSecond;
 
 public:
 	GPS();
@@ -42,7 +43,7 @@ private:
 class ACG :public Sensor
 {
 public:
-	LocalAcceleration acg;
+	std::vector<Acceleration_3D_MeterPerSecondSquared> accelerationMeterPerSecond;
 public:
 	ACG();
 	ACG(std::string folderPath);
@@ -54,7 +55,7 @@ private:
 class GYRO :public Sensor
 {
 public:
-	LocalRoationSpeed gyro;
+	std::vector<Rotation_3D_RadiansPerSecond> rotation_RadiansPerSecond;
 public:
 	GYRO();
 	GYRO(std::string folderPath);

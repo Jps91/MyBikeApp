@@ -116,6 +116,26 @@ Rotation_3D_Quaternion quaternion_applyDelta(const Rotation_3D_Quaternion& curre
 	return quaternion_Multiply(delta, current);
 }
 
+Rotation_3D_Quaternion quaternion_normalize(const Rotation_3D_Quaternion& rotation)
+{
+	double magnitude = std::sqrt(rotation.w * rotation.w + rotation.x * rotation.x + rotation.y * rotation.y + rotation.z * rotation.z);
+
+	// Avoid division by zero
+	if (magnitude < DBL_MIN)
+	{
+		// Return identity quaternion if magnitude is too small
+		return { 1.0, 0.0, 0.0, 0.0 };
+	}
+
+	return {
+		rotation.time,
+		rotation.w / magnitude,
+		rotation.x / magnitude,
+		rotation.y / magnitude,
+		rotation.z / magnitude
+	};
+}
+
 
 Rotation_3D_Quaternion quaternion_delta_from_Rotation_3D_RadiansPerSecond(
 	const Rotation_3D_RadiansPerSecond& rotation_3D,
@@ -128,7 +148,7 @@ Rotation_3D_Quaternion quaternion_delta_from_Rotation_3D_RadiansPerSecond(
 	) * deltaTime;
 
 	// Avoid division by zero
-	if (angle < 1e-8)
+	if (angle < DBL_MIN)
 	{
 		return Rotation_3D_Quaternion{ rotation_3D.time,1.0, 0.0, 0.0, 0.0 };  // No rotation
 	}
@@ -149,5 +169,62 @@ Rotation_3D_Quaternion quaternion_delta_from_Rotation_3D_RadiansPerSecond(
 		(axisY / axisLength) * sinHalfAngle,
 		(axisZ / axisLength) * sinHalfAngle
 	};
+}
+
+std::vector<Speed_3D_MeterPerSecond> speed_3D_from_Acceleration_3D(const std::vector<Acceleration_3D_MeterPerSecondSquared>& acceleration)
+{
+	std::vector<Speed_3D_MeterPerSecond>speed;
+	speed.resize(acceleration.size());
+	for (size_t i = 1; i < acceleration.size(); i++)
+	{
+		speed[i].time = acceleration[i].time;
+		double timeDiff = acceleration[i].time - acceleration[i - 1].time;
+		speed[i].x = speed[i - 1].x + acceleration[i].x * timeDiff;
+		speed[i].y = speed[i - 1].y + acceleration[i].y * timeDiff;
+		speed[i].z = speed[i - 1].z + acceleration[i].z * timeDiff;
+	}
+	return speed;
+}
+
+std::vector<Acceleration_3D_MeterPerSecondSquared> acceleration_3D_toLocalCoordSystem(
+	const std::vector<Acceleration_3D_MeterPerSecondSquared>& acc,
+	const std::vector<Rotation_3D_Quaternion>& rotation)
+{
+	std::vector<Acceleration_3D_MeterPerSecondSquared> a;
+	a.resize(acc.size());
+
+	for (size_t i = 0; i < acc.size() && i < rotation.size(); ++i)
+	{
+		const auto& q = rotation[i];
+
+		// Inverse of the rotation quaternion (for unit quaternions, it's just the conjugate)
+		Rotation_3D_Quaternion q_inv{
+			q.w,
+			-q.x,
+			-q.y,
+			-q.z
+		};
+
+		// Vector as a quaternion (pure quaternion)
+		Rotation_3D_Quaternion v{
+		0.0,
+			acc[i].x,
+			acc[i].y,
+			acc[i].z
+		};
+
+		// Rotate: v' = q * v * q^-1
+		Rotation_3D_Quaternion temp = quaternion_Multiply(q, v);
+		Rotation_3D_Quaternion rotated = quaternion_Multiply(temp, q_inv);
+
+		a[i] = Acceleration_3D_MeterPerSecondSquared{
+			acc[i].time,
+			rotated.x,
+			rotated.y,
+			rotated.z
+		};
+	}
+
+	return a;
 }
 

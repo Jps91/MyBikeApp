@@ -30,7 +30,7 @@ double testPerformance()
 	track.initialize(folder, folder);
 
 
-	std::fstream outputFile(folder + "Output.csv",std::ios::trunc|std::ios::out);
+	std::fstream outputFile(folder + "Output.csv", std::ios::trunc | std::ios::out);
 	if (!outputFile)
 	{
 		std::cerr << "Could not open File: " << folder << "Output.csv\n";
@@ -41,15 +41,11 @@ double testPerformance()
 	auto start = high_resolution_clock::now();
 	///////////////////////Start with your code here:
 
-	Rotation_3D_Quaternion rotation{};
-	for (size_t i = 1; i < track.gyroSensor.gyro.size; i++)
-	{
-		Rotation_3D_RadiansPerSecond rot_rad{ track.gyroSensor.gyro.time[i],track.gyroSensor.gyro.rollPerSecond[i],track.gyroSensor.gyro.pitchPerSecond[i],track.gyroSensor.gyro.yawPerSecond[i], };
-		double deltaTime = track.gyroSensor.gyro.time[i] - track.gyroSensor.gyro.time[i - 1];
-		Rotation_3D_Quaternion rot_delta = quaternion_delta_from_Rotation_3D_RadiansPerSecond(rot_rad, deltaTime);
-		rotation = quaternion_Multiply(rotation, rot_delta);
-		outputFile << euler_Radians_from_Quaternion(rotation).time << "	" << euler_Radians_from_Quaternion(rotation).pitch * 180 / 3.14 << "	" << euler_Radians_from_Quaternion(rotation).roll * 180 / 3.14 << "	" << euler_Radians_from_Quaternion(rotation).yaw * 180 / 3.14 << "\n";
-	}
+	Acceleration_3D_MeterPerSecondSquared correctedACG;
+	//correctedACG = acceleration_3D_toLocalCoordSystem(track.acgSensor.accelerationMeterPerSecond);
+
+
+
 	outputFile.close();
 
 
@@ -93,30 +89,6 @@ int main()
 	RecordingSession track;
 	track.initialize(folder, folder + "Output\\");
 
-	GlobalPosition gps;
-	gps = track.gpsSensor.gPos;
-
-	for (size_t i = 0; i < gps.size / 100; i++)
-	{
-		//std::cout << gps.time[i] << "	" << gps.latitude[i] << "	" << gps.longitude[i] << "\n";
-	}
-
-	LocalAcceleration acg;
-	acg = track.acgSensor.acg;
-
-	for (size_t i = 0; i < acg.size / 100; i++)
-	{
-		//std::cout << acg.time[i] << "	" << acg.x[i] << "	" << acg.y[i] << "\n";
-
-	}
-
-	LocalRoationSpeed gyro;
-	gyro = track.gyroSensor.gyro;
-
-	for (size_t i = 0; i < gyro.size / 100; i++)
-	{
-		//std::cout << gyro.time[i] << "	" << gyro.rollPerSecond[i] << "	" << gyro.pitchPerSecond[i] << "	" << gyro.yawPerSecond[i] << "\n";
-	}
 
 
 	return 0;

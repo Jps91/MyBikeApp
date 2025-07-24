@@ -184,7 +184,7 @@ struct Rotation_3D_RadiansPerSecond
 };
 
 
-struct Bearing_Degree
+struct Rotation_1D_Degree	//as well as gps bearing_degree
 {
 	double time;
 
@@ -405,7 +405,7 @@ struct GlobalRotaion
 	std::vector<double>time;
 	std::vector<double>global_roll;
 	std::vector<double>global_pitch;
-	std::vector<double>global_yaw;	//bearing
+	std::vector<double>global_yaw;	//bearing_degree
 
 	//NOTE: Bearing and Yaw are not the same.
 	//Yaw does not depend on the postion change while driving. BUT the effect might be less noticeable then the yaw drift.
