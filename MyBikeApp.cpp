@@ -42,7 +42,7 @@ double testPerformance()
 	///////////////////////Start with your code here:
 
 	Acceleration_3D_MeterPerSecondSquared correctedACG;
-	//correctedACG = acceleration_3D_toLocalCoordSystem(track.acgSensor.accelerationMeterPerSecond);
+	correctedACG = acceleration_3D_toLocalCoordSystem(track.acgSensor.accelerationMeterPerSecond,);
 
 
 

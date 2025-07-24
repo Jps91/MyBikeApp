@@ -228,3 +228,71 @@ std::vector<Acceleration_3D_MeterPerSecondSquared> acceleration_3D_toLocalCoordS
 	return a;
 }
 
+std::vector<Rotation_3D_Quaternion> quaternion_delta_from_Rotation_3D_RadiansPerSecond(const std::vector<Rotation_3D_RadiansPerSecond>& rotation_3D)
+{
+	std::vector<Rotation_3D_Quaternion> result;
+	result.resize(rotation_3D.size());
+
+	for (size_t i = 1; i < rotation_3D.size(); i++)
+	{
+		double angle = std::sqrt(
+			rotation_3D[i].roll * rotation_3D[i].roll +
+			rotation_3D[i].pitch * rotation_3D[i].pitch +
+			rotation_3D[i].yaw * rotation_3D[i].yaw) * (rotation_3D[i].time - rotation_3D[i - 1].time);
+
+		// Avoid division by zero
+		if (angle < DBL_MIN)
+		{
+			result[i].time = rotation_3D[i].time;
+			result[i].w = 1;
+			result[i].x = 0;
+			result[i].y = 0;
+			result[i].z = 0;
+			continue;
+		}
+
+		// Normalize the axis (use the same values as above)
+		double axisX = rotation_3D[i].roll;
+		double axisY = rotation_3D[i].pitch;
+		double axisZ = rotation_3D[i].yaw;
+		double axisLength = std::sqrt(axisX * axisX + axisY * axisY + axisZ * axisZ);
+
+		double halfAngle = angle / 2.0;
+		double sinHalfAngle = std::sin(halfAngle);
+		double cosHalfAngle = std::cos(halfAngle);
+
+		result[i].time = rotation_3D[i].time;
+		result[i].w = cosHalfAngle;
+		result[i].x = (axisX / axisLength) * sinHalfAngle;
+		result[i].y = (axisY / axisLength) * sinHalfAngle;
+		result[i].z = (axisZ / axisLength) * sinHalfAngle;
+	}
+}
+
+std::vector<Rotation_3D_Quaternion> quaternion_Multiply(const std::vector<Rotation_3D_Quaternion>& quaternion1, const std::vector<Rotation_3D_Quaternion>& quaternion2)
+{
+	if (quaternion1.size() != quaternion2.size())
+	{
+		std::cerr << "ERROR: List - quaternion_Multiply - are not the same length";
+	}
+
+	std::vector<Rotation_3D_Quaternion>result;
+	result.resize(quaternion1.size());
+
+	for (size_t i = 0; i < quaternion1.size(); i++)
+	{
+		result[i].time = quaternion2[i].time;
+		result[i].w = quaternion1[i].w * quaternion2[i].w - quaternion1[i].x * quaternion2[i].x - quaternion1[i].y * quaternion2[i].y - quaternion1[i].z * quaternion2[i].z;
+		result[i].x = quaternion1[i].w * quaternion2[i].x + quaternion1[i].x * quaternion2[i].w + quaternion1[i].y * quaternion2[i].z - quaternion1[i].z * quaternion2[i].y;
+		result[i].y = quaternion1[i].w * quaternion2[i].y - quaternion1[i].x * quaternion2[i].z + quaternion1[i].y * quaternion2[i].w + quaternion1[i].z * quaternion2[i].x;
+		result[i].z = quaternion1[i].w * quaternion2[i].z + quaternion1[i].x * quaternion2[i].y - quaternion1[i].y * quaternion2[i].x + quaternion1[i].z * quaternion2[i].w;
+	}
+	return result;
+}
+
+std::vector<Rotation_3D_Quaternion> quaternion_applyDelta(const Rotation_3D_Quaternion& rotationInitial, const std::vector<Rotation_3D_Quaternion>& rotation)
+{
+
+	return std::vector<Rotation_3D_Quaternion>();
+}
+

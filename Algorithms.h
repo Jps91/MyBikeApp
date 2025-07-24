@@ -53,3 +53,11 @@ std::vector<Acceleration_3D_MeterPerSecondSquared>acceleration_3D_toLocalCoordSy
 
 std::vector<Rotation_3D_Quaternion>quaternion_delta_from_Rotation_3D_RadiansPerSecond(
 	const std::vector<Rotation_3D_RadiansPerSecond>& rotation);
+
+std::vector<Rotation_3D_Quaternion>quaternion_Multiply(
+const std::vector<Rotation_3D_Quaternion>& base,
+const std::vector<Rotation_3D_Quaternion>& delta);
+
+std::vector<Rotation_3D_Quaternion>quaternion_applyDelta(
+	const Rotation_3D_Quaternion& rotationInitial,
+	const std::vector<Rotation_3D_Quaternion>& rotation);
