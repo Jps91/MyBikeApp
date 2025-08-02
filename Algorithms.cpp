@@ -267,6 +267,7 @@ std::vector<Rotation_3D_Quaternion> quaternion_delta_from_Rotation_3D_RadiansPer
 		result[i].y = (axisY / axisLength) * sinHalfAngle;
 		result[i].z = (axisZ / axisLength) * sinHalfAngle;
 	}
+	return result;
 }
 
 std::vector<Rotation_3D_Quaternion> quaternion_Multiply(const std::vector<Rotation_3D_Quaternion>& quaternion1, const std::vector<Rotation_3D_Quaternion>& quaternion2)

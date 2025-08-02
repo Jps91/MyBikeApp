@@ -42,9 +42,31 @@ double testPerformance()
 	///////////////////////Start with your code here:
 
 	Acceleration_3D_MeterPerSecondSquared correctedACG;
-	correctedACG = acceleration_3D_toLocalCoordSystem(track.acgSensor.accelerationMeterPerSecond,);
+	//correctedACG = acceleration_3D_toLocalCoordSystem(track.acgSensor.accelerationMeterPerSecond,);
 
 
+
+
+
+	KinematicListV3 listV3;
+	listV3.time.data = { 0,1,2,3,4,5 };
+	listV3.x.data = { 5,6,7,8,9,10 };
+	listV3.y.data = { 10,11,12,13,14,15 };
+	listV3.z.data = { 15,16,17,18,19,20 };
+
+	listV3.time + listV3.time;
+
+	listV3.resizeAllAxis(track.acgSensor.accelerationMeterPerSecond.size());
+
+	for (size_t i = 0; i < track.acgSensor.accelerationMeterPerSecond.size(); i++)
+	{
+		listV3.addEntrySingle(track.acgSensor.accelerationMeterPerSecond[i].time, track.acgSensor.accelerationMeterPerSecond[i].x, track.acgSensor.accelerationMeterPerSecond[i].y, track.acgSensor.accelerationMeterPerSecond[i].z);
+	}
+
+	for (size_t i = 0; i < listV3.time.data.size(); i++)
+	{
+		outputFile << listV3.time.data[i] + listV3.time.data[i] << "	" << listV3.x.data[i] * listV3.x.data[i] << "	" << pow(listV3.x.data[i], 2) << "	" << sqrt(pow(listV3.x.data[i], 2)) << "\n";
+	}
 
 	outputFile.close();
 

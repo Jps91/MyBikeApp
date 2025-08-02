@@ -134,6 +134,7 @@
     <ClCompile Include="ACG.cpp" />
     <ClCompile Include="Algorithms.cpp" />
     <ClCompile Include="CSVImporter.cpp" />
+    <ClCompile Include="DataStructure.cpp" />
     <ClCompile Include="FastAverageDouble.cpp" />
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="GPS.cpp" />
